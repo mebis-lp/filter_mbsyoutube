@@ -1,0 +1,26 @@
+.mbsembed-frame {
+    width : 100%
+}
+
+.mbsembed-responsive .mbsembed-responsive-item, .mbsembed-responsive iframe,
+.mbsembed-responsive embed, .mbsembed-responsive object, .mbsembed-responsive video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    border: 0;
+}
+
+.mbsembed-responsive {
+    position: relative;
+    display: block;
+    height: 0;
+    padding:0;
+    overflow: hidden;
+}
+
+.mbsembed-responsive-4by3 {
+    padding-bottom: 75%;
+}
