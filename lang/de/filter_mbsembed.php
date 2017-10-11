@@ -24,4 +24,4 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['filtername'] = 'Embed mebis content';
+$string['filtername'] = 'mebis Inhalt einbetten';
