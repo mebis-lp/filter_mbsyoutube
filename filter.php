@@ -49,7 +49,7 @@ class filter_mbsembed extends moodle_text_filter {
         }
 
         // Check, whether user has embedded the page url from mediathek.
-        $regex = "%<a.*?href=\"(https://mediathek.mebis.bayern.de/\?doc=record(.*?))\".*?</a>%is";
+        $regex = "%<a.*?href=\"(https://mediathek.mebis.bayern.de/(index.php)*?\?doc=record(.*?))\".*?</a>%is";
         $text = preg_replace_callback($regex, array(&$this, 'fix_page_url_callback'), $text);
 
         // Embed mediathek item.
@@ -67,6 +67,7 @@ class filter_mbsembed extends moodle_text_filter {
     protected function fix_page_url_callback($match) {
 
         $mediatheklink = $match[0];
+        $mediatheklink = str_replace('index.php', '', $mediatheklink);
         $mediatheklink = str_replace('record', 'embeddedObject', $mediatheklink);
         $mediatheklink = str_replace('identifier', 'id', $mediatheklink);
 
