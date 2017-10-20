@@ -49,7 +49,7 @@ class filter_mbsembed extends moodle_text_filter {
         }
 
         // User has chosen the wrong link and tries to embed via H5P Link.
-        $regex = "%<a.*?href=\"(https://mediathek.mebis.bayern.de/(index.php)*?\?doc=provideVideo(.*?))\".*?</a>%is";
+        $regex = "%<a.*?href=\"(https://mediathek.mebis.bayern.de/\?doc=provideVideo(.*?))\".*?</a>%is";
         $text = preg_replace_callback($regex, array(&$this, 'fix_wrong_link_callback'), $text);
 
         // Embed mediathek item.
@@ -60,15 +60,13 @@ class filter_mbsembed extends moodle_text_filter {
     }
 
     /**
-     * Build the correct url, if user has choosen the page url of item from the mediathek or if the user took the H5P link.
+     * Build the correct url, if user has choosen the H5P link.
      *
      * @param array $match
      */
     protected function fix_wrong_link_callback($match) {
 
         $mediatheklink = $match[0];
-        $mediatheklink = str_replace('index.php', '', $mediatheklink);
-        $mediatheklink = str_replace('record', 'embeddedObject', $mediatheklink);
         $mediatheklink = str_replace('provideVideo', 'embeddedObject', $mediatheklink);
         $mediatheklink = str_replace('identifier', 'id', $mediatheklink);
 
@@ -89,7 +87,7 @@ class filter_mbsembed extends moodle_text_filter {
         ];
 
         $iframe = html_writer::tag('iframe', '', $iframeparams);
-        return html_writer::tag('div', $iframe, ['class' => 'mbsembed-responsive mbsembed-responsive-4by3 mbsembed-wrapper']);
+        return html_writer::tag('div', $iframe, ['class' => 'mbsembed-responsive mbsembed-responsive-16by9 mbsembed-wrapper']);
     }
 
 }
