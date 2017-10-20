@@ -48,12 +48,6 @@ class filter_mbsembed extends moodle_text_filter {
             return $text;
         }
 
-        /* MBS-2234: (Andre Scherl) do not replace urls containing doc=record
-        // Check, whether user has embedded the page url from mediathek.
-        $regex = "%<a.*?href=\"(https://mediathek.mebis.bayern.de/(index.php)*?\?doc=record(.*?))\".*?</a>%is";
-        $text = preg_replace_callback($regex, array(&$this, 'fix_wrong_link_callback'), $text);
-        */
-
         // User has chosen the wrong link and tries to embed via H5P Link.
         $regex = "%<a.*?href=\"(https://mediathek.mebis.bayern.de/(index.php)*?\?doc=provideVideo(.*?))\".*?</a>%is";
         $text = preg_replace_callback($regex, array(&$this, 'fix_wrong_link_callback'), $text);
