@@ -49,11 +49,11 @@ class filter_mbsembed extends moodle_text_filter {
         }
 
         // User has chosen the wrong link and tries to embed via H5P Link.
-        $regex = "%<a.*?href=\"(https://mediathek.mebis.bayern.de/\?doc=provideVideo(.*?))\".*?</a>%is";
+        $regex = "%<a[^>]?href=\"(https://mediathek.mebis.bayern.de/\?doc=provideVideo(.*?))\".*?</a>%is";
         $text = preg_replace_callback($regex, array(&$this, 'fix_wrong_link_callback'), $text);
 
         // Embed mediathek item.
-        $regex = "%<a.*?href=\"(https://mediathek.mebis.bayern.de/\?doc=embeddedObject(.*?))\".*?</a>%is";
+        $regex = "%<a[^>]?href=\"(https://mediathek.mebis.bayern.de/\?doc=embeddedObject(.*?))\".*?</a>%is";
         $newtext = preg_replace_callback($regex, array(&$this, 'filter_mbsembed_callback'), $text);
 
         return $newtext;
