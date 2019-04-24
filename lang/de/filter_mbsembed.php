@@ -25,3 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['filtername'] = 'mebis Inhalt einbetten';
+$string['mediatheksitelink'] = 'mehr zu diesem Medium';
+$string['privacy:metadata'] = 'Das mebis Inhalt einbetten Plugin speichert keine personenbezogenen Daten.';
+$string['pruefungsarchivsitelink'] = 'in eigenem Tab öffnen';

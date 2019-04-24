@@ -15,16 +15,32 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Languange definition
+ * Privacy Subsystem implementation for filter_mbsembed.
  *
  * @package    filter_mbsembed
- * @copyright  2017 Andreas Wagner, ISB Bayern
+ * @copyright  2019 Franziska Hübler, ISB Bayern
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace filter_mbsembed\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-$string['filtername'] = 'Embed mebis content';
-$string['mediatheksitelink'] = 'more about this media';
-$string['privacy:metadata'] = 'The embed mebis content filter plugin does not store any personal data.';
-$string['pruefungsarchivsitelink'] = 'open in own tab';
+/**
+ * Privacy Subsystem for filter_mbsembed implementing null_provider.
+ *
+ * @copyright  2019 Franziska Hübler, ISB Bayern
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class provider implements \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:metadata';
+    }
+}
