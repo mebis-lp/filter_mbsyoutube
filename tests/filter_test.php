@@ -83,7 +83,7 @@ class filter_mbsembed_testcase extends advanced_testcase {
                 . 'https://mediathek.mebis.bayern.de/?doc=embeddedObject&amp;id=BWS-04985575&amp;type=video&amp;start=0'
                 . '&amp;title=Die20%Roboter20%kommen" allowfullscreen="allowfullscreen"></iframe></div><div class="pull-right '
                 . 'mbsembed-link"><a class="internal" target="_blank" rel="noopener noreferrer" '
-                . 'href="https://mediathek.mebis.bayern.de/?doc=record&amp;identifier=BWS-04985575">' 
+                . 'href="https://mediathek.mebis.bayern.de/?doc=record&amp;identifier=BWS-04985575">'
                 . get_string('mediatheksitelink', 'filter_mbsembed') . '</a></div></p>';
         $this->assertEquals($expected, $filtered);
 
@@ -112,6 +112,53 @@ class filter_mbsembed_testcase extends advanced_testcase {
                 . ' href="https://mediathek.mebis.bayern.de/?doc=embed&amp;identifier=BY-00125077&amp;referrer=moodle&amp;'
                 . 'mode=display&amp;user=' . urlencode($USER->username) . '">'
                 . get_string('pruefungsarchivsitelink', 'filter_mbsembed') . '</a></div></p>';
+        $this->assertEquals($expected, $filtered);
+
+        // Check mebis embed filter with YouTube Videos.
+        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
+                . '<a href="https://www.youtube.com/watch?v=OnQ3erG_B80">Link zum Video</a></p>'
+                . '<p>Das ist das Ende!</p>';
+        $filtered = $filter->filter($youtube);
+        $expected = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
+                . '<a href="https://www.youtube-nocookie.com/embed/OnQ3erG_B80">Link zum Video</a></p>'
+                . '<p>Das ist das Ende!</p>';
+        $this->assertEquals($expected, $filtered);
+
+        // Check mebis embed filter with YouTube Videos II.
+        $youtube = '<p>YouTube - URL als Text eingefügt<br>https://www.youtube.com/watch?v=OnQ3erG_B80</p>'
+                . '<p>Das ist das Ende!</p>';
+        $filtered = $filter->filter($youtube);
+        $expected = '<p>YouTube - URL als Text eingefügt<br>https://www.youtube-nocookie.com/embed/OnQ3erG_B80</p>'
+                . '<p>Das ist das Ende!</p>';
+        $this->assertEquals($expected, $filtered);
+
+        // Check mebis embed filter with YouTube Videos III.
+        $youtube = '<p>YouTube - Short URL als Text eingefügt<br>https://youtu.be/OnQ3erG_B80</p>'
+                . '<p>Das ist das Ende!</p>';
+        $filtered = $filter->filter($youtube);
+        $expected = '<p>YouTube - Short URL als Text eingefügt<br>https://www.youtube-nocookie.com/embed/OnQ3erG_B80</p>'
+                . '<p>Das ist das Ende!</p>';
+        $this->assertEquals($expected, $filtered);
+
+        // Check mebis embed filter with YouTube Videos IV.
+        $youtube = '<p>YouTube - Short URL als <a href="xyz"> eingefügt<br><a href="https://youtu.be/OnQ3erG_B80">'
+                . 'Link zum Video</a></p><p>Das ist das Ende!</p>';
+        $filtered = $filter->filter($youtube);
+        $expected = '<p>YouTube - Short URL als <a href="xyz"> eingefügt<br><a '
+                . 'href="https://www.youtube-nocookie.com/embed/OnQ3erG_B80">Link zum Video</a></p>'
+                . '<p>Das ist das Ende!</p>';
+        $this->assertEquals($expected, $filtered);
+
+        // Check mebis embed filter with YouTube Videos V.
+        $youtube = '<p>YouTube - als iFrame eingefügt<br>'
+                . '<iframe width="560" height="315" src="https://www.youtube.com/embed/OnQ3erG_B80" frameborder="0"'
+                . ' allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+                . '<p>Das ist das Ende!</p>';
+        $filtered = $filter->filter($youtube);
+        $expected = '<p>YouTube - als iFrame eingefügt<br>'
+                . '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/OnQ3erG_B80" frameborder="0"'
+                . ' allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+                . '<p>Das ist das Ende!</p>';
         $this->assertEquals($expected, $filtered);
     }
 }
