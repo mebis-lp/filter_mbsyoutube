@@ -141,10 +141,27 @@ class filter_mbsembed extends moodle_text_filter {
         ];
 
         $iframe = html_writer::tag('iframe', '', $iframeparams);
-        $iframediv = html_writer::tag('div', $iframe,
-                ['class' => 'mbsembed-responsive mbsembed-responsive-16by9 mbsembed-wrapper']);
-        $mediasitediv = html_writer::tag('div', $mediasitelink, ['class' => 'pull-right mbsembed-link']);
-        return $iframediv.$mediasitediv;
-    }
 
+        $type = $paramskeyedarray['type'] ?? '';
+
+        switch ($type) {
+            case "audio":
+                $iframediv = html_writer::tag(
+                    'div',
+                    $iframe,
+                    ['class' => 'mbsembed-responsive mbsembed-responsive-16by9 mbsembed-wrapper mbsembed-type-audio']
+                );
+                break;
+            default:
+                $iframediv = html_writer::tag(
+                    'div',
+                    $iframe,
+                    ['class' => 'mbsembed-responsive mbsembed-responsive-16by9 mbsembed-wrapper']
+                );
+                break;
+        }
+
+        $mediasitediv = html_writer::tag('div', $mediasitelink, ['class' => 'pull-right mbsembed-link']);
+        return $iframediv . $mediasitediv;
+    }
 }
