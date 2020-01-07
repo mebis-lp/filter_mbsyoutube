@@ -28,3 +28,9 @@ $string['filtername'] = 'Embed mebis content';
 $string['mediatheksitelink'] = 'more about this media';
 $string['privacy:metadata'] = 'The embed mebis content filter plugin does not store any personal data.';
 $string['pruefungsarchivsitelink'] = 'open in own tab';
+$string['mbstwoclickboxtext'] = '<strong>Privacy Policy</strong>'
+    . '<br />Once the video plays, personal <a href="https://policies.google.com/privacy" '
+    . 'target="_blank" style="color:#e3e3e3 !important;">information</a>, such as the IP address, will be sent to YouTube.';
+$string['mbswatchvideo'] = 'Start videos ✓';
+$string['mbsrestartvideobtn'] = 'Restart video';
+$string['mbsresumevideobtn'] = 'Resume video';
