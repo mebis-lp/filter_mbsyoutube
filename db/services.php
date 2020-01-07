@@ -15,17 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
- *
- * @package    filter_mbsembed
- * @copyright  2017 Andreas Wagner, ISB Bayern
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Settings for two click solution.
+ * @package   filter_mbsembed
+ * @copyright 2019 Peter Mayer, ISB Bayern, peter.mayer@isb.bayern.de
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019120300;           // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2016052301;           // Requires this Moodle version.
-$plugin->component = 'filter_mbsembed';    // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '3.3';
+$functions = [
+    'filter_mbsembed_setvideoprovidercache'         => [
+        'classname'    => 'filter_mbsembed_external',
+        'methodname'   => 'setvideoprovidercache',
+        'classpath'    => 'filter/mbsembed/classes/external.php',
+        'description'  => 'Set two click acceptance status to cache',
+        'type'         => 'write',
+        'ajax'         => true,
+    ]
+];

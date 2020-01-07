@@ -15,17 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
- *
- * @package    filter_mbsembed
- * @copyright  2017 Andreas Wagner, ISB Bayern
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Definition for two click solution
+ * @package   filter_mbsembed
+ * @copyright Peter Mayer, ISB Bayern, peter.mayer@isb.bayern.de
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2019120300;           // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2016052301;           // Requires this Moodle version.
-$plugin->component = 'filter_mbsembed';    // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '3.3';
+$definitions = ['mbsexternalsourceaccept' => ['mode' => cache_store::MODE_SESSION]];
