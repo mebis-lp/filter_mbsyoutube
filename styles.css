@@ -1,16 +1,16 @@
-.mbsembed-frame {
+.mbsyoutube-frame {
     width: 100%
 }
 
-.mbsembed-ytiframe {
+.mbsyoutube-ytiframe {
     padding: 0;
 }
 
-.mbsembed-responsive .mbsembed-responsive-item,
-.mbsembed-responsive iframe,
-.mbsembed-responsive embed,
-.mbsembed-responsive object,
-.mbsembed-responsive video {
+.mbsyoutube-responsive .mbsyoutube-responsive-item,
+.mbsyoutube-responsive iframe,
+.mbsyoutube-responsive embed,
+.mbsyoutube-responsive object,
+.mbsyoutube-responsive video {
     position: absolute;
     top: 0;
     left: 0;
@@ -20,7 +20,7 @@
     border: 0;
 }
 
-.mbsembed-responsive {
+.mbsyoutube-responsive {
     position: relative;
     display: block;
     height: 0;
@@ -28,15 +28,15 @@
     overflow: hidden;
 }
 
-.mbsembed-responsive-16by9 {
+.mbsyoutube-responsive-16by9 {
     padding-bottom: 56%;
 }
 
-.mbsembed-link {
+.mbsyoutube-link {
     font-size: 14px;
 }
 
-.mbsembed-twoclickwarning-button {
+.mbsyoutube-twoclickwarning-button {
     display: inline-block;
     padding: 5px 10px;
     background: #e62117 !important;
@@ -49,18 +49,18 @@
     cursor: pointer;
 }
 
-.mbsembed-twoclickwarning-buttonbox {
+.mbsyoutube-twoclickwarning-buttonbox {
     margin-top: 35px;
     text-align: center;
 }
 
-.mbsembed-twoclickwarning-boxtext {
+.mbsyoutube-twoclickwarning-boxtext {
     color: #e3e3e3 !important;
     margin-top: 20px;
     padding: 25px;
 }
 
-.mbsembed-twoclickwarning-wrapper {
+.mbsyoutube-twoclickwarning-wrapper {
     -webkit-user-select: none;
     -moz-user-select: none;
     user-select: none;
@@ -71,17 +71,17 @@
     text-align: left;
 }
 
-.mbsembed-status-wrapper {
+.mbsyoutube-status-wrapper {
     padding-top: 30px;
     text-align: center;
 }
 
-.mbsembed-img-logo {
+.mbsyoutube-img-logo {
     padding-top: 40px;
     padding-bottom: 20px;
 }
 
-.mbsembed-bar-overlay{
+.mbsyoutube-bar-overlay{
     position:absolute;
     bottom:49px;
     left:0;
@@ -91,6 +91,6 @@
     z-index:50;
 }
 
-.mbsembed-type-audio {
+.mbsyoutube-type-audio {
     padding: 45px;
 }

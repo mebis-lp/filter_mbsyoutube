@@ -16,8 +16,8 @@
 /**
  * Javascript controller YouTube Videos.
  *
- * @module     filter_mbsembed/youtubevideos
- * @package    filter_mbsembed
+ * @module     filter_mbsyoutube/youtubevideos
+ * @package    filter_mbsyoutube
  * @copyright  2019 Peter Mayer, ISB Bayern, peter.mayer@isb.bayern.de
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,7 +27,7 @@ define(['jquery'], function ($) {
         init: function (args) {
 
             var videos = {};
-            $('.mbsembed-ytiframe').each(function () {
+            $('.mbsyoutube-ytiframe').each(function () {
                 var playerid = this.id.split("__");
                 var videoid = playerid[2];
                 var videouniqid = playerid[1];
@@ -68,9 +68,8 @@ define(['jquery'], function ($) {
 
             /**
              * Initiates one YouTube player
-             * 
-             * @param string videoid 
-             * @param array ytparam 
+             * @param string videoid
+             * @param array ytparam
              */
             function onYouTubePlayer(videoid, ytparam, uniqeid) {
                 player[uniqeid] = new YT.Player('yt__' + uniqeid + '__' + videoid, {
@@ -83,7 +82,7 @@ define(['jquery'], function ($) {
                 });
 
                 // Adds eventlistener to transparent layer to start/stop vdideo.
-                $('#yt__baroverlay__' + uniqeid + "__" + videoid).click(function(){
+                $('#yt__baroverlay__' + uniqeid + "__" + videoid).click(function () {
                     var playerid = this.id.split("__");
                     var videouniqid = playerid[2];
                     var state = player[videouniqid].getPlayerState();
@@ -95,11 +94,9 @@ define(['jquery'], function ($) {
                 });
             }
 
-
             /**
-             * Callback Player State event listener
-             * 
-             * @param object event 
+             * Callback Player State event listener.
+             * @param object event
              */
             function onPlayerStateChange(event) {
 
@@ -117,7 +114,9 @@ define(['jquery'], function ($) {
                 if (event.data == YT.PlayerState.PLAYING) {
                     videos = getJsonObjectFromIdAttribut(videoid, 'data-extern', uniqeid);
                     args = videos[uniqeid]['ytparam'];
-                    if (args['end'] == '' || args['end'] == 0) { delete args['end']; }
+                    if (args['end'] == '' || args['end'] == 0) {
+                        delete args['end'];
+                    }
                     if (player[uniqeid].getCurrentTime() > args['end'] || player[uniqeid].getCurrentTime() < args['start']) {
                         player[uniqeid].loadVideoById({
                             videoId: videoid,
@@ -140,9 +139,8 @@ define(['jquery'], function ($) {
             }
 
             /**
-             * Catches Errors
-             * 
-             * @param object event 
+             * Catches Errors.
+             * @param object event
              */
             function catchError(event) {
                 if (event.data == 100) {
@@ -152,9 +150,8 @@ define(['jquery'], function ($) {
 
             /**
              * Makes a json object from an data-attribut value of a tag.
-             * 
-             * @param string videoid 
-             * @param string attribut 
+             * @param string videoid
+             * @param string attribut
              */
             function getJsonObjectFromIdAttribut(videoid, attribut, uniqid) {
                 var jsonobj = $.parseJSON($('#yt__' + uniqid + '__' + videoid).attr(attribut));
@@ -167,10 +164,8 @@ define(['jquery'], function ($) {
                 return videos;
             }
 
-            /**
-             * onClick event for start playing
-             */
-            $(".mbsembed-yt-play").click(function (e) {
+            // OnClick event for start playing.
+            $(".mbsyoutube-yt-play").click(function (e) {
                 var buttonid = e.target.id;
                 var buttonarr = buttonid.split("__");
                 var uniqid = buttonarr[2];
@@ -179,10 +174,8 @@ define(['jquery'], function ($) {
                 player[uniqid].playVideo();
             });
 
-            /**
-             * onClick event for restart video after endded
-             */
-            $(".mbsembed-yt-restart").click(function (e) {
+            // OnClick event for restart video after endded.
+            $(".mbsyoutube-yt-restart").click(function (e) {
                 var buttonid = e.target.id;
                 var buttonarr = buttonid.split("__");
                 var uniqid = buttonarr[2];

@@ -16,7 +16,7 @@
 
 /**
  * Set cache for two click solution
- * @package   filter_mbsembed
+ * @package   filter_mbsyoutube
  * @copyright 2019 Peter Mayer, ISB Bayern, peter.mayer@isb.bayern.de
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,11 +26,11 @@ require_once("$CFG->libdir/externallib.php");
 
 /**
  * Set cache for two click solution
- * @package   filter_mbsembed
+ * @package   filter_mbsyoutube
  * @copyright 2019 Peter Mayer, ISB Bayern, peter.mayer@isb.bayern.de
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class filter_mbsembed_external extends external_api {
+class filter_mbsyoutube_external extends external_api {
 
     /**
      * Returns description of method parameters
@@ -55,7 +55,7 @@ class filter_mbsembed_external extends external_api {
     public static function setvideoprovidercache($provider, $courseid) {
         global $USER;
 
-        $cache = \cache::make('filter_mbsembed', 'mbsexternalsourceaccept');
+        $cache = \cache::make('filter_mbsyoutube', 'mbsexternalsourceaccept');
         $cache->set($USER->id . "_" . $courseid . "_" . $provider, true);
 
         if ($cache->get($USER->id . "_" . $courseid . "_" . $provider)) {

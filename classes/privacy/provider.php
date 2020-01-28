@@ -15,21 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for filter_mbsembed.
+ * Privacy Subsystem implementation for filter_mbsyoutube.
  *
- * @package    filter_mbsembed
- * @copyright  2019 Franziska Hübler, ISB Bayern
+ * @package    filter_mbsyoutube
+ * @copyright  2020 Peter Mayer, ISB Bayern
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace filter_mbsembed\privacy;
+namespace filter_mbsyoutube\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Privacy Subsystem for filter_mbsembed implementing null_provider.
+ * Privacy Subsystem for filter_mbsyoutube implementing null_provider.
  *
- * @copyright  2019 Franziska Hübler, ISB Bayern
+ * @copyright  2020 Peter Mayer, ISB Bayern
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\null_provider {

@@ -17,20 +17,19 @@
 /**
  * Languange definition
  *
- * @package    filter_mbsembed
- * @copyright  2017 Andreas Wagner, ISB Bayern
+ * @package    filter_mbsyoutube
+ * @copyright  2020 Peter Mayer, ISB Bayern
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['filtername'] = 'mebis Inhalt einbetten';
-$string['mediatheksitelink'] = 'mehr zu diesem Medium';
-$string['privacy:metadata'] = 'Das mebis Inhalt einbetten Plugin speichert keine personenbezogenen Daten.';
-$string['pruefungsarchivsitelink'] = 'in eigenem Tab öffnen';
-$string['mbstwoclickboxtext'] = '<strong>Datenschutzhinweis</strong>'
-    . '<br />Sobald das Video abgespielt wird, werden an YouTube persönliche <a href="https://policies.google.com/privacy" '
-    . 'target="_blank" style="color:#e3e3e3 !important;">Daten</a> wie die IP-Adresse übermittelt.';
-$string['mbswatchvideo'] = 'Video trotzdem ansehen ✓';
-$string['mbsrestartvideobtn'] = 'Video erneut abspielen';
-$string['mbsresumevideobtn'] = 'Video fortsetzen';
+$string['cachedef_mbsexternalsourceaccept'] = "Caches the confirmation to view YouTube videos.";
+$string['filtername'] = 'Render two click solution for YouTube videos.';
+$string['privacy:metadata'] = 'The embed mebis content filter plugin does not store any personal data.';
+$string['mbstwoclickboxtext'] = '<strong>Privacy Policy</strong>'
+    . '<br />Once the video plays, personal <a href="https://policies.google.com/privacy" '
+    . 'target="_blank" style="color:#e3e3e3 !important;">information</a>, such as the IP address, will be sent to YouTube.';
+$string['mbswatchvideo'] = 'Start videos ✓';
+$string['mbsrestartvideobtn'] = 'Restart video';
+$string['mbsresumevideobtn'] = 'Resume video';
