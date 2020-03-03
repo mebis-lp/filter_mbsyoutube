@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Languange definition
  *
  * @package    filter_mbsyoutube
  * @copyright  2020 Peter Mayer, ISB Bayern
@@ -24,8 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2020013100;           // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2016052301;           // Requires this Moodle version.
-$plugin->component = 'filter_mbsyoutube';    // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '3.3';
+$string['cachedef_mbsexternalsourceaccept'] = "Speichert die Zustimmung, dass der User mit der Weitergabe der IP-Adresse an YouTube einverstanden ist, im Cache.";
+$string['filtername'] = 'YouTube zwei Klick Lösung rendern';
+$string['privacy:metadata'] = 'Das mbsYouTube Plugin speichert keine personenbezogenen Daten.';
+$string['mbstwoclickboxtext'] = '<strong>Datenschutzhinweis</strong>'
+    . '<br />Sobald das Video abgespielt wird, werden an YouTube persönliche <a href="https://policies.google.com/privacy" '
+    . 'target="_blank" style="color:#e3e3e3 !important;">Daten</a> wie die IP-Adresse übermittelt.';
+$string['mbswatchvideo'] = 'Video trotzdem ansehen ✓';
+$string['mbsrestartvideobtn'] = 'Video erneut abspielen';
+$string['mbsresumevideobtn'] = 'Video fortsetzen';

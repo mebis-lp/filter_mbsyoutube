@@ -16,7 +16,7 @@
 
 /**
  * Definition for two click solution
- * @package   filter_mbsembed
+ * @package   filter_mbsyoutube
  * @copyright Peter Mayer, ISB Bayern, peter.mayer@isb.bayern.de
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -16,20 +16,20 @@
 /**
  * Javascript set youtube provider cache .
  *
- * @module     filter_mbsembed/setvideoprovidercache
- * @package    filter_mbsembed
+ * @module     filter_mbsyoutube/setvideoprovidercache
+ * @package    filter_mbsyoutube
  * @copyright  2019 Peter Mayer, ISB Bayern, peter.mayer@isb.bayern.de
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notification) {
+define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notification) {
 
     var params;
 
     function onVideoAcceptanceChange(provider) {
 
         ajax.call([{
-            methodname: 'filter_mbsembed_setvideoprovidercache',
+            methodname: 'filter_mbsyoutube_setvideoprovidercache',
             args: {
                 provider: provider,
                 courseid: params.courseid
@@ -48,7 +48,7 @@
         init: function (args) {
             params = args;
 
-            $('.mbsembed-twoclickwarning-button').click(function () {
+            $('.mbsyoutube-twoclickwarning-button').click(function () {
                 onVideoAcceptanceChange("YouTube");
             });
         }

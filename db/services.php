@@ -16,17 +16,17 @@
 
 /**
  * Settings for two click solution.
- * @package   filter_mbsembed
+ * @package   filter_mbsyoutube
  * @copyright 2019 Peter Mayer, ISB Bayern, peter.mayer@isb.bayern.de
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-    'filter_mbsembed_setvideoprovidercache'         => [
-        'classname'    => 'filter_mbsembed_external',
+    'filter_mbsyoutube_setvideoprovidercache'         => [
+        'classname'    => 'filter_mbsyoutube_external',
         'methodname'   => 'setvideoprovidercache',
-        'classpath'    => 'filter/mbsembed/classes/external.php',
+        'classpath'    => 'filter/mbsyoutube/classes/external.php',
         'description'  => 'Set two click acceptance status to cache',
         'type'         => 'write',
         'ajax'         => true,

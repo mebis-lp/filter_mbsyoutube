@@ -17,20 +17,20 @@
 /**
  * Filter class
  *
- * @package    filter_mbsembed
+ * @package    filter_mbsyoutube
  * @copyright  2017 Andreas Wagner, 2019 Peter Mayer, ISB Bayern
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Filter class mbsembed.
+ * Filter class mbsyoutube.
  *
- * @package    filter_mbsembed
- * @copyright  2017 Andreas Wagner, ISB Bayern
+ * @package    filter_mbsyoutube
+ * @copyright  2020 Peter Mayer, ISB Bayern
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class filter_mbsembed extends moodle_text_filter {
+class filter_mbsyoutube extends moodle_text_filter {
     /**
      * @var array $youtubevideoids Array of all YouTube Video IDs of course page.
      */
@@ -47,14 +47,10 @@ class filter_mbsembed extends moodle_text_filter {
     private $hasuseraccepted;
 
     /**
-     * Filter the text and replace the links to the mediathek with an
-     * suitable iframe.
-     *
      * Filter the text and replace links to youtube.com with an DSGVO coform style.
      *
-     * Please note that we replace links NOT urls. If it should be possible to
-     * convert a url, you have to filter the text with filter_urltolink before
-     * applying this filter.
+     * Please note that we replace links, urls AND iFrames. In order to support all
+     * kinds of YouTube embedding.
      *
      * @param string $text some HTML content
      * @param array $options options passed to the filters
@@ -67,23 +63,20 @@ class filter_mbsembed extends moodle_text_filter {
             return $text;
         }
 
-        $regexmediathek = '%<a[^>]?href=\"(https://mediathek.mebis.bayern.de/(index.php)?\?doc='
-            . '(embeddedObject|provideVideo|playerExternal|embed)(.*?))\".*?</a>%is';
-        $regexmbsembedyoutube = '/('
+        $regexyoutube = '/('
             . '((<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)("?[^<]+<\/a>)?)'
             . '|<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\/embed\/\b)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)"(.*)>(.*)<\/iframe>'
             . '|(<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/embed\/)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?("?[^<]+<\/a>)?)'
             . '|<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)"(.*)>(.*)<\/iframe>'
             . ')/';
-        $regexmbsembedyoutubeshorturl = '/('
+        $regexyoutubeshorturl = '/('
             . '((<a[^>]?href=")((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)"?[^<]+<\/a>)'
             . '|((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)'
             . ')/';
 
         $patternsandcallbacks = [
-            $regexmbsembedyoutube => "filter_mbsembed::youtube_callback",
-            $regexmbsembedyoutubeshorturl => "filter_mbsembed::youtube_shorturl_callback",
-            $regexmediathek => "filter_mbsembed::mediathek_callback"
+            $regexyoutube => "filter_mbsyoutube::youtube_callback",
+            $regexyoutubeshorturl => "filter_mbsyoutube::youtube_shorturl_callback",
         ];
 
         $newtext = preg_replace_callback_array(
@@ -102,11 +95,11 @@ class filter_mbsembed extends moodle_text_filter {
 
             if (!$this->get_hasuseraccepted()) {
                 $params = ['courseid' => $this->get_courseid()];
-                $PAGE->requires->js_call_amd('filter_mbsembed/sethasuseraccepted', 'init', [$params]);
+                $PAGE->requires->js_call_amd('filter_mbsyoutube/sethasuseraccepted', 'init', [$params]);
             } else {
                 $url = new moodle_url('https://www.youtube.com/iframe_api');
                 $PAGE->requires->js($url, false);
-                $PAGE->requires->js_call_amd('filter_mbsembed/youtube_api', 'init');
+                $PAGE->requires->js_call_amd('filter_mbsyoutube/youtube_api', 'init');
             }
         }
         return $newtext;
@@ -170,7 +163,7 @@ class filter_mbsembed extends moodle_text_filter {
         }
 
         $courseid = $this->get_courseid();
-        $cache = \cache::make('filter_mbsembed', 'mbsexternalsourceaccept');
+        $cache = \cache::make('filter_mbsyoutube', 'mbsexternalsourceaccept');
         $this->hasuseraccepted = $cache->get($USER->id . "_" . $courseid . "_YouTube");
 
         return $this->hasuseraccepted;
@@ -256,7 +249,7 @@ class filter_mbsembed extends moodle_text_filter {
 
         $iframeparams = [
             'id' => 'yt__' . $uniqid . '__' . $videoid,
-            'class' => 'mbsembed-frame mbsembed-responsive-item mbsembed-ytiframe',
+            'class' => 'mbsyoutube-frame mbsyoutube-responsive-item mbsyoutube-ytiframe',
             'allowfullscreen' => 'allowfullscreen',
             'data-extern' => json_encode($urlparam),
             'crossorigin' => 'anonymous'
@@ -264,46 +257,46 @@ class filter_mbsembed extends moodle_text_filter {
 
         $inputtagparam = [
             'type' => 'button',
-            'class' => 'mbsembed-twoclickwarning-button',
-            'value' => get_string('mbswatchvideo', 'filter_mbsembed')
+            'class' => 'mbsyoutube-twoclickwarning-button',
+            'value' => get_string('mbswatchvideo', 'filter_mbsyoutube')
         ];
 
         $inputtag2param = [
             'id' => 'yt__play__' . $uniqid . '__' . $videoid,
             'type' => 'button',
-            'class' => 'mbsembed-twoclickwarning-button mbsembed-yt-play',
-            'value' => get_string('mbsresumevideobtn', 'filter_mbsembed')
+            'class' => 'mbsyoutube-twoclickwarning-button mbsyoutube-yt-play',
+            'value' => get_string('mbsresumevideobtn', 'filter_mbsyoutube')
         ];
         $inputtag3param = [
             'id' => 'yt__restart__' . $uniqid . '__' . $videoid,
             'type' => 'button',
-            'class' => 'mbsembed-twoclickwarning-button mbsembed-yt-restart',
-            'value' => get_string('mbsrestartvideobtn', 'filter_mbsembed'),
+            'class' => 'mbsyoutube-twoclickwarning-button mbsyoutube-yt-restart',
+            'value' => get_string('mbsrestartvideobtn', 'filter_mbsyoutube'),
             'hidden' => 'hidden'
         ];
         $divtag1param = [
-            'class' => 'mbsembed-twoclickwarning-boxtext'
+            'class' => 'mbsyoutube-twoclickwarning-boxtext'
         ];
 
         $divtag2param = [
-            'class' => 'mbsembed-twoclickwarning-buttonbox'
+            'class' => 'mbsyoutube-twoclickwarning-buttonbox'
         ];
 
         $divtag3param = [
-            'class' => 'mbsembed-status-wrapper',
+            'class' => 'mbsyoutube-status-wrapper',
             'id' => 'yt__statwrap__' . $uniqid . '__' . $videoid,
             'hidden' => 'hidden'
         ];
 
         $divtag4param = [
-            'class' => 'mbsembed-bar-overlay',
+            'class' => 'mbsyoutube-bar-overlay',
             'id' => 'yt__baroverlay__' . $uniqid . '__' . $videoid,
             'hidden' => 'hidden'
         ];
 
         $imgtagparam = [
-            'class' => 'mbsembed-img-logo',
-            'src' => new moodle_url('/theme/boost_campus/pix/mbs/mebis-logo.png')
+            'class' => 'mbsyoutube-img-logo',
+            'src' => new moodle_url('/theme/mebis/pix/mebis-logo.png')
         ];
 
         if ($hasuseraccepted) {
@@ -327,7 +320,7 @@ class filter_mbsembed extends moodle_text_filter {
         // Will be replaced by the YouTube API by the player.
         $iframe = html_writer::tag('div', '', $iframeparams);
 
-        $divtag1 = html_writer::tag('div', get_string('mbstwoclickboxtext', 'filter_mbsembed'), $divtag1param);
+        $divtag1 = html_writer::tag('div', get_string('mbstwoclickboxtext', 'filter_mbsyoutube'), $divtag1param);
 
         $inputtag = html_writer::empty_tag('input', $inputtagparam);
         $inputtag2 = html_writer::empty_tag('input', $inputtag2param);
@@ -339,7 +332,7 @@ class filter_mbsembed extends moodle_text_filter {
 
         $divtag3 = html_writer::tag('div', $imgtag . "<br>" . $inputtag2 . $inputtag3, $divtag3param);
         $divtag4 = html_writer::tag('div', "", $divtag4param);
-        $classes = ['class' => 'mbsembed-responsive mbsembed-responsive-16by9 mbsembed-wrapper mbsembed-twoclickwarning-wrapper', 'style' => $styles];
+        $classes = ['class' => 'mbsyoutube-responsive mbsyoutube-responsive-16by9 mbsyoutube-wrapper mbsyoutube-twoclickwarning-wrapper', 'style' => $styles];
         $wrappertag = html_writer::tag('div', $divtag1 . $divtag2 . $divtag3 . $iframe . $divtag4, $classes);
 
         return $wrappertag;
@@ -381,115 +374,5 @@ class filter_mbsembed extends moodle_text_filter {
             $urlparamret['paramarr'] = $preconfparam;
         }
         return $urlparamret;
-    }
-
-    /**
-     * Callback to embed a Mediathek iframe.
-     *
-     * @param array $match
-     * @return string HTML fragment
-     */
-    protected function mediathek_callback($match) {
-        global $USER;
-
-        $link = htmlspecialchars_decode($match[1]);
-        $paramdoc = $match[3];
-        $mediasiteurl = ''; // URL to Mediathek site, e.g. https://mediathek.mebis.bayern.de/?doc=record&identifier=BWS-04985575.
-        $mediathekurl = ''; // Mediaplayer-URL, e. g. https://mediathek.mebis.bayern.de/?doc=embeddedObject&id=BWS-04985575&type=video&start=0&title=Die%20Roboter%0kommen.
-
-        // Parse url params.
-        $urlparams = parse_url($link, PHP_URL_QUERY);
-        $paramsarray = explode("&", $urlparams);
-        $paramskeyedarray = [];
-        foreach ($paramsarray as $param) { // Each parameter.
-            $split = explode("=", $param); // Split in key and value.
-            $paramskeyedarray[$split[0]] = $split[1];
-        }
-
-        switch ($paramdoc) {
-            case 'embeddedObject':
-                // Mediathek Mediaplayer-URL.
-                $mediathekurl = $link;
-                // Build Mediathek site URL.
-                $paramskeyedarray['doc'] = str_replace('embeddedObject', 'record', $paramskeyedarray['doc']);
-                $mediasiteurl = 'https://mediathek.mebis.bayern.de/?doc=' . urlencode($paramskeyedarray['doc']) . '&identifier=' .
-                    urlencode($paramskeyedarray['id']);
-                $mediasitelink = html_writer::link(
-                    $mediasiteurl,
-                    get_string('mediatheksitelink', 'filter_mbsembed'),
-                    ['class' => 'internal', 'target' => '_blank', 'rel' => 'noopener noreferrer']
-                );
-                break;
-            case 'provideVideo':
-                // URL for H5p is given.
-                // Build Mediathek site URL.
-                $paramskeyedarray['doc'] = str_replace('provideVideo', 'record', $paramskeyedarray['doc']);
-                $mediasiteurl = 'https://mediathek.mebis.bayern.de/?doc=' . urlencode($paramskeyedarray['doc']) . '&identifier=' .
-                    urlencode($paramskeyedarray['identifier']);
-                $mediasitelink = html_writer::link(
-                    $mediasiteurl,
-                    get_string('mediatheksitelink', 'filter_mbsembed'),
-                    ['class' => 'internal', 'target' => '_blank', 'rel' => 'noopener noreferrer']
-                );
-                // Build Mediathek Mediaplayer-URL.
-                $mediathekurl = str_replace('provideVideo', 'embeddedObject', $link);
-                $mediathekurl = str_replace('identifier', 'id', $mediathekurl);
-                break;
-            case 'playerExternal':
-                // URL for MZ-DVD is given.
-                $mediathekurl = $link;
-                // Build Mediathek site URL.
-                $paramskeyedarray['doc'] = str_replace('playerExternal', 'record', $paramskeyedarray['doc']);
-                $mediasiteurl = 'https://mediathek.mebis.bayern.de/?doc=' . urlencode($paramskeyedarray['doc']) . '&identifier=' .
-                    urlencode($paramskeyedarray['identifier']);
-                $mediasitelink = html_writer::link(
-                    $mediasiteurl,
-                    get_string('mediatheksitelink', 'filter_mbsembed'),
-                    ['class' => 'internal', 'target' => '_blank', 'rel' => 'noopener noreferrer']
-                );
-                break;
-            case 'embed':
-                // Prüfungsarchiv-URL is given.
-                $mediathekurl = $link . '&referrer=moodle&mode=display&user=' . urlencode($USER->username);
-                $mediasiteurl = $mediathekurl;
-                $mediasitelink = html_writer::link(
-                    $mediasiteurl,
-                    get_string('pruefungsarchivsitelink', 'filter_mbsembed'),
-                    ['class' => 'internal', 'target' => '_blank', 'rel' => 'noopener noreferrer']
-                );
-                break;
-            case 'default':
-                return $match[0];
-        }
-
-        $iframeparams = [
-            'class' => 'mbsembed-frame mbsembed-responsive-item',
-            'src' => $mediathekurl,
-            'allowfullscreen' => 'allowfullscreen'
-        ];
-
-        $iframe = html_writer::tag('iframe', '', $iframeparams);
-
-        $type = $paramskeyedarray['type'] ?? '';
-
-        switch ($type) {
-            case "audio":
-                $iframediv = html_writer::tag(
-                    'div',
-                    $iframe,
-                    ['class' => 'mbsembed-responsive mbsembed-responsive-16by9 mbsembed-wrapper mbsembed-type-audio']
-                );
-                break;
-            default:
-                $iframediv = html_writer::tag(
-                    'div',
-                    $iframe,
-                    ['class' => 'mbsembed-responsive mbsembed-responsive-16by9 mbsembed-wrapper']
-                );
-                break;
-        }
-
-        $mediasitediv = html_writer::tag('div', $mediasitelink, ['class' => 'pull-right mbsembed-link']);
-        return $iframediv . $mediasitediv;
     }
 }
