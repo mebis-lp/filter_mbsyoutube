@@ -71,6 +71,19 @@
     text-align: left;
 }
 
+@media only screen and (max-width: 650px){
+    .mbsyoutube-twoclickwarning-wrapper {
+        min-height: 250px;
+    }
+
+    .mbsyoutube-twoclickwarning-boxtext {
+        color: #e3e3e3 !important;
+        text-align: center;
+        margin-top: 0px;
+        padding: 10px;
+    }
+}
+
 .mbsyoutube-status-wrapper {
     padding-top: 30px;
     text-align: center;

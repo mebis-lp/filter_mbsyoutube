@@ -63,14 +63,17 @@ class filter_mbsyoutube extends moodle_text_filter {
             return $text;
         }
 
+        // When adding a new regex command, there must be added a new if clause in the callback function, too.
         $regexyoutube = '/('
-            . '((<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)("?[^<]+<\/a>)?)'
-            . '|<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\/embed\/\b)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)"(.*)>(.*)<\/iframe>'
+            . '((<video[^>]+><source[^>]?src=")(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)(">[^<]+<\/video>)?)'
+            . '|((<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)("?[^<]+<\/a>)?)'
+            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\/embed\/\b)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)"(.*)>(.*)<\/iframe>)'
             . '|(<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/embed\/)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?("?[^<]+<\/a>)?)'
-            . '|<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)"(.*)>(.*)<\/iframe>'
+            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)"(.*)>(.*)<\/iframe>)'
             . ')/';
         $regexyoutubeshorturl = '/('
             . '((<a[^>]?href=")((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)"?[^<]+<\/a>)'
+            . '|((<video[^>]+><source[^>]?src=")((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)"?[^<]+<\/video>)'
             . '|((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)'
             . ')/';
 
@@ -118,8 +121,14 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         $styles = '';
         $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
         $dom->loadHTML($matchingtag);
-        $elem = $dom->getElementsByTagName('iframe')->item(0);
+        libxml_clear_errors();
+
+        if ($elem = $dom->getElementsByTagName('video')->item(0)) {
+        } elseif ($elem = $dom->getElementsByTagName('iframe')->item(0)) {
+        }
+
         if (isset($elem)) {
             $styles = $elem->getAttribute('style');
             if (strlen($styles)) {
@@ -176,26 +185,22 @@ class filter_mbsyoutube extends moodle_text_filter {
      * @return string Url
      */
     protected function youtube_callback($match) {
-
         $hasuseraccepted = $this->get_hasuseraccepted();
-
         $styles = $this->get_style_attributs($match[1]);
-        if (is_string($match[10]) && strlen($match[10]) > 1) {
-            // Anchor tag and plaintext watch url.
-            $vid = $match[10];
-            $params = parse_url($match[4]);
-        } else if (is_string($match[18]) && strlen($match[18]) > 1) {
-            // Iframe (nocookie) embed url.
-            $vid = $match[18];
-            $params = parse_url($match[14]);
-        } else if (is_string($match[29]) && strlen($match[29]) > 1) {
-            // Anchor tag and plain text embed url.
-            $vid = $match[29];
-            $params = parse_url($match[23]);
-        } else if (is_string($match[38]) && strlen($match[38]) > 1) {
-            // Iframe (nocookie) watch url.
-            $vid = $match[38];
-            $params = parse_url($match[33]);
+
+        // The following arrays containing all possible offset of the $match array.
+        $videoffsets = [10, 21, 30, 41, 51];
+        $urloffsets = [4, 15, 26, 35, 46];
+
+        foreach ($videoffsets as $videoffset) {
+            if (isset($match[$videoffset])) {
+                $vid = $match[$videoffset];
+            }
+        }
+        foreach ($urloffsets as $urloffset) {
+            if (isset($match[$urloffset])) {
+                $params = parse_url($match[$urloffset]);
+            }
         }
 
         $urlparam = self::build_url_querystring($params);
@@ -216,12 +221,17 @@ class filter_mbsyoutube extends moodle_text_filter {
         $hasuseraccepted = $this->get_hasuseraccepted();
 
         $styles = $this->get_style_attributs($match[1]);
+
+        // The order of the if clauses has to be the same as the order of the regex commands.
         if (is_string($match[6]) && strlen($match[6]) > 1) {
             $vid = $match[6];
             $params = parse_url($match[4]);
-        } else if (is_string($match[10]) && strlen($match[10]) > 1) {
-            $vid = $match[10];
-            $params = parse_url($match[8]);
+        } else if (is_string($match[12]) && strlen($match[12]) > 1) {
+            $vid = $match[12];
+            $params = parse_url($match[10]);
+        } else if (is_string($match[16]) && strlen($match[16]) > 1) {
+            $vid = $match[16];
+            $params = parse_url($match[14]);
         }
         $urlparam = self::build_url_querystring($params);
 
@@ -345,6 +355,7 @@ class filter_mbsyoutube extends moodle_text_filter {
      * @return string URL parameters string
      */
     private static function build_url_querystring($params) {
+
         $preconfparam = [
             'wmode' => 'transparent',  // Has to be on first place.
             'modestbranding' => 1,
@@ -375,4 +386,4 @@ class filter_mbsyoutube extends moodle_text_filter {
         }
         return $urlparamret;
     }
-}
+}    
