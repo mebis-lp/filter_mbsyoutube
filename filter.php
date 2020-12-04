@@ -205,7 +205,7 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         $urlparam = self::build_url_querystring($params);
         array_push($this->youtubevideoids, $vid);
-        $iframe = self::render_two_click_version_youtube($vid, $hasuseraccepted, $urlparam['paramarr'], $styles);
+        $iframe = $this->render_two_click_version_youtube($vid, $hasuseraccepted, $urlparam['paramarr'], $styles);
 
         return $iframe;
     }
@@ -237,7 +237,7 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         array_push($this->youtubevideoids, $vid);
 
-        $ytwrapper = self::render_two_click_version_youtube($vid, $hasuseraccepted, $urlparam['paramarr'], $styles);
+        $ytwrapper = $this->render_two_click_version_youtube($vid, $hasuseraccepted, $urlparam['paramarr'], $styles);
         return $ytwrapper;
     }
 
@@ -257,6 +257,12 @@ class filter_mbsyoutube extends moodle_text_filter {
             $uniqid = uniqid();
         }
 
+        $popupnurl = new moodle_url('/filter/mbsyoutube/video_popup.php', ['vid' => $videoid]);
+        $atagparam = [
+            'href' => $popupnurl,
+            'class' => 'mbsyoutube-twoclickwarning-button mbsyoutube-message-show',
+        ];
+        
         $iframeparams = [
             'id' => 'yt__' . $uniqid . '__' . $videoid,
             'class' => 'mbsyoutube-frame mbsyoutube-responsive-item mbsyoutube-ytiframe',
@@ -267,7 +273,7 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         $inputtagparam = [
             'type' => 'button',
-            'class' => 'mbsyoutube-twoclickwarning-button',
+            'class' => 'mbsyoutube-twoclickwarning-button mbsyoutube-message-hidden',
             'value' => get_string('mbswatchvideo', 'filter_mbsyoutube')
         ];
 
@@ -333,13 +339,12 @@ class filter_mbsyoutube extends moodle_text_filter {
         $divtag1 = html_writer::tag('div', get_string('mbstwoclickboxtext', 'filter_mbsyoutube'), $divtag1param);
 
         $inputtag = html_writer::empty_tag('input', $inputtagparam);
+        $atag = html_writer::tag('a', get_string('mbswatchvideo', 'filter_mbsyoutube'), $atagparam);
         $inputtag2 = html_writer::empty_tag('input', $inputtag2param);
         $inputtag3 = html_writer::empty_tag('input', $inputtag3param);
 
         $imgtag = html_writer::empty_tag('img', $imgtagparam);
-
-        $divtag2 = html_writer::tag('div', $inputtag, $divtag2param);
-
+        $divtag2 = html_writer::tag('div', $inputtag . $atag, $divtag2param);
         $divtag3 = html_writer::tag('div', $imgtag . "<br>" . $inputtag2 . $inputtag3, $divtag3param);
         $divtag4 = html_writer::tag('div', "", $divtag4param);
         $classes = ['class' => 'mbsyoutube-responsive mbsyoutube-responsive-16by9 mbsyoutube-wrapper mbsyoutube-twoclickwarning-wrapper', 'style' => $styles];
@@ -347,6 +352,8 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         return $wrappertag;
     }
+
+
 
     /**
      * Gets all URL query parameters and returns allowed parameters as url string.
