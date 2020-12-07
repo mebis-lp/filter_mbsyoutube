@@ -65,16 +65,16 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         // When adding a new regex command, there must be added a new if clause in the callback function, too.
         $regexyoutube = '/('
-            . '((<video[^>]+><source[^>]?src=")(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)(">[^<]+<\/video>)?)'
-            . '|((<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)("?[^<]+<\/a>)?)'
-            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\/embed\/\b)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)"(.*)>(.*)<\/iframe>)'
-            . '|(<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/embed\/)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?("?[^<]+<\/a>)?)'
-            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)"(.*)>(.*)<\/iframe>)'
+            . '((<video[^>]+><source[^>]?src=")(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)(">[^<]+<\/video>)?)'
+            . '|((<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)("?[^<]+<\/a>)?)'
+            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\/embed\/\b)([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)"(.*)>(.*)<\/iframe>)'
+            . '|(<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/embed\/)([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?("?[^<]+<\/a>)?)'
+            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)"(.*)>(.*)<\/iframe>)'
             . ')/';
         $regexyoutubeshorturl = '/('
-            . '((<a[^>]?href=")((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)"?[^<]+<\/a>)'
-            . '|((<video[^>]+><source[^>]?src=")((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)"?[^<]+<\/video>)'
-            . '|((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)'
+            . '((<a[^>]?href=")((http|https):\/\/youtu.be\/([\w\d\-_]+)([\w@\?^=%&\/~+#\-]+)?)"?[^<]+<\/a>)'
+            . '|((<video[^>]+><source[^>]?src=")((http|https):\/\/youtu.be\/([\w\d\-_]+)([\w@\?^=%&\/~+#\-]+)?)"?[^<]+<\/video>)'
+            . '|((http|https):\/\/youtu.be\/([\w\d\-_]+)([\w@\?^=%&\/~+#\-]+)?)'
             . ')/';
 
         $patternsandcallbacks = [
