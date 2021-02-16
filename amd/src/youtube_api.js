@@ -28,7 +28,7 @@ define(['jquery'], function ($) {
 
             var videos = {};
             $('.mbsyoutube-ytiframe').each(function () {
-                var playerid = this.id.split("__");
+                var playerid = this.id.split("___");
                 var videoid = playerid[2];
                 var videouniqid = playerid[1];
                 videos = getJsonObjectFromIdAttribut(videoid, 'data-extern', videouniqid);
@@ -72,7 +72,7 @@ define(['jquery'], function ($) {
              * @param array ytparam
              */
             function onYouTubePlayer(videoid, ytparam, uniqeid) {
-                player[uniqeid] = new YT.Player('yt__' + uniqeid + '__' + videoid, {
+                player[uniqeid] = new YT.Player('yt___' + uniqeid + '___' + videoid, {
                     videoId: videoid,
                     playerVars: ytparam,
                     events: {
@@ -82,8 +82,8 @@ define(['jquery'], function ($) {
                 });
 
                 // Adds eventlistener to transparent layer to start/stop vdideo.
-                $('#yt__baroverlay__' + uniqeid + "__" + videoid).click(function () {
-                    var playerid = this.id.split("__");
+                $('#yt___baroverlay___' + uniqeid + "___" + videoid).click(function () {
+                    var playerid = this.id.split("___");
                     var videouniqid = playerid[2];
                     var state = player[videouniqid].getPlayerState();
                     if (state == YT.PlayerState.PLAYING) {
@@ -101,15 +101,15 @@ define(['jquery'], function ($) {
             function onPlayerStateChange(event) {
 
                 var frameid = event.target.a.id;
-                var ids = frameid.split("__");
+                var ids = frameid.split("___");
                 var videoid = ids[2];
                 var uniqeid = ids[1];
 
-                $('#yt__statwrap__' + uniqeid + '__' + videoid).removeAttr('hidden');
-                $('#yt__restart__' + uniqeid + '__' + videoid).removeAttr('hidden');
-                $('#yt__restart__' + uniqeid + '__' + videoid).hide();
-                $('#yt__baroverlay__' + uniqeid + '__' + videoid).removeAttr('hidden');
-                $('#yt__baroverlay__' + uniqeid + '__' + videoid).hide();
+                $('#yt___statwrap___' + uniqeid + '___' + videoid).removeAttr('hidden');
+                $('#yt___restart___' + uniqeid + '___' + videoid).removeAttr('hidden');
+                $('#yt___restart___' + uniqeid + '___' + videoid).hide();
+                $('#yt___baroverlay___' + uniqeid + '___' + videoid).removeAttr('hidden');
+                $('#yt___baroverlay___' + uniqeid + '___' + videoid).hide();
 
                 if (event.data == YT.PlayerState.PLAYING) {
                     videos = getJsonObjectFromIdAttribut(videoid, 'data-extern', uniqeid);
@@ -126,15 +126,15 @@ define(['jquery'], function ($) {
                     }
                     $('#' + frameid).show();
                 } else if (event.data == YT.PlayerState.ENDED) {
-                    $('#yt__play__' + uniqeid + '__' + videoid).hide();
-                    $('#yt__restart__' + uniqeid + '__' + videoid).show();
-                    $('#yt__statwrap__' + uniqeid + '__' + videoid).show();
-                    $('#yt__baroverlay__' + uniqeid + '__' + videoid).hide();
+                    $('#yt___play___' + uniqeid + '___' + videoid).hide();
+                    $('#yt___restart___' + uniqeid + '___' + videoid).show();
+                    $('#yt___statwrap___' + uniqeid + '___' + videoid).show();
+                    $('#yt___baroverlay___' + uniqeid + '___' + videoid).hide();
                     $('#' + frameid).hide();
                 } else if (event.data == YT.PlayerState.PAUSED) {
-                    $('#yt__baroverlay__' + uniqeid + '__' + videoid).show();
-                    $('#yt__restart__' + uniqeid + '__' + videoid).hide();
-                    $('#yt__statwrap__' + uniqeid + '__' + videoid).show();
+                    $('#yt___baroverlay___' + uniqeid + '___' + videoid).show();
+                    $('#yt___restart___' + uniqeid + '___' + videoid).hide();
+                    $('#yt___statwrap___' + uniqeid + '___' + videoid).show();
                 }
             }
 
@@ -154,7 +154,7 @@ define(['jquery'], function ($) {
              * @param string attribut
              */
             function getJsonObjectFromIdAttribut(videoid, attribut, uniqid) {
-                var jsonobj = $.parseJSON($('#yt__' + uniqid + '__' + videoid).attr(attribut));
+                var jsonobj = $.parseJSON($('#yt___' + uniqid + '___' + videoid).attr(attribut));
                 videos[uniqid] = {};
                 videos[uniqid]['ytparam'] = {};
                 videos[uniqid]['videoid'] = videoid;
@@ -167,20 +167,20 @@ define(['jquery'], function ($) {
             // OnClick event for start playing.
             $(".mbsyoutube-yt-play").click(function (e) {
                 var buttonid = e.target.id;
-                var buttonarr = buttonid.split("__");
+                var buttonarr = buttonid.split("___");
                 var uniqid = buttonarr[2];
                 var videoid = buttonarr[3];
-                $('#yt__' + uniqid + '__' + videoid).delay(200).fadeIn(400);
+                $('#yt___' + uniqid + '___' + videoid).delay(200).fadeIn(400);
                 player[uniqid].playVideo();
             });
 
             // OnClick event for restart video after endded.
             $(".mbsyoutube-yt-restart").click(function (e) {
                 var buttonid = e.target.id;
-                var buttonarr = buttonid.split("__");
+                var buttonarr = buttonid.split("___");
                 var uniqid = buttonarr[2];
                 var videoid = buttonarr[3];
-                $('#yt__' + uniqid + '__' + videoid).delay(200).fadeIn(400);
+                $('#yt___' + uniqid + '___' + videoid).delay(200).fadeIn(400);
 
                 videos = getJsonObjectFromIdAttribut(videoid, 'data-extern', uniqid);
                 args = videos[uniqid]['ytparam'];

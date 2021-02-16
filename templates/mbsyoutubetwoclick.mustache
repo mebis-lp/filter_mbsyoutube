@@ -1,0 +1,39 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template filter_mbsyoutube
+}}
+<div class="mbsyoutube-responsive mbsyoutube-responsive-16by9 mbsyoutube-wrapper mbsyoutube-twoclickwarning-wrapper" style="{{mbswrapperstyles}}">
+    <div class="mbsyoutube-twoclickwarning-buttonbox mbsyoutube-message-hidden" {{{optionacceptedhidden}}}>
+        <div class="mbsyoutube-twoclickwarning-boxtext">{{{mbstwoclickboxtext}}}</div>
+        <input type="button" class="mbsyoutube-twoclickwarning-button" value="{{{mbswatchvideo}}}"/>
+    </div>
+    <div class="mbsyoutube-twoclickwarning-buttonbox mbsyoutube-message-show">
+        <a href="{{popupnurl}}" class="mbsyoutube-twoclickwarning-button">{{{mbsopenpopup}}}</a>
+    </div>
+    <div class="mbsyoutube-status-wrapper" id="yt___statwrap___{{uniqid}}___{{videoid}}" hidden="hidden">
+        <img class="mbsyoutube-img-logo" src="{{mebislogourl}}" />
+        <br>
+        <input id="yt___play___{{uniqid}}___{{videoid}}" type="button" class="mbsyoutube-twoclickwarning-button mbsyoutube-yt-play" value="{{{mbsresumevideobtn}}}" />
+        <input id="yt___restart___{{uniqid}}___{{videoid}}" type="button" class="mbsyoutube-twoclickwarning-button mbsyoutube-yt-restart" value="{{{mbsrestartvideobtn}}}"
+            hidden="hidden" />
+    </div>
+    <div id="yt___{{uniqid}}___{{videoid}}" class="mbsyoutube-frame mbsyoutube-responsive-item mbsyoutube-ytiframe" allowfullscreen="allowfullscreen"
+        data-extern='{{{mbsplayerdetails}}}' crossorigin="anonymous" {{optionnotacceptedhidden}}>
+    </div>
+    <div class="mbsyoutube-bar-overlay" id="yt___baroverlay___{{uniqid}}___{{videoid}}" hidden="hidden"></div>
+</div>

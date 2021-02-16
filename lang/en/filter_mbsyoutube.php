@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['cachedef_mbsexternalsourceaccept'] = "Caches the confirmation to view YouTube videos.";
 $string['filtername'] = 'Render two click solution for YouTube videos.';
 $string['privacy:metadata'] = 'The embed mebis content filter plugin does not store any personal data.';
+$string['mbsopenpopup'] = 'Open video player.';
 $string['mbstwoclickboxtext'] = '<strong>Privacy Policy</strong>'
     . '<br />Once the video plays, personal <a href="https://policies.google.com/privacy" '
     . 'target="_blank" style="color:#e3e3e3 !important;">information</a>, such as the IP address, will be sent to YouTube.';

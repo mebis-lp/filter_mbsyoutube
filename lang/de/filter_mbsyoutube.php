@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['cachedef_mbsexternalsourceaccept'] = "Speichert die Zustimmung, dass der User mit der Weitergabe der IP-Adresse an YouTube einverstanden ist, im Cache.";
 $string['filtername'] = 'YouTube zwei Klick Lösung rendern';
 $string['privacy:metadata'] = 'Das mbsYouTube Plugin speichert keine personenbezogenen Daten.';
+$string['mbsopenpopup'] = 'Videoplayer öffnen';
 $string['mbstwoclickboxtext'] = '<strong>Datenschutzhinweis</strong>'
     . '<br />Sobald das Video abgespielt wird, werden an YouTube persönliche <a href="https://policies.google.com/privacy" '
     . 'target="_blank" style="color:#e3e3e3 !important;">Daten</a> wie die IP-Adresse übermittelt.';
