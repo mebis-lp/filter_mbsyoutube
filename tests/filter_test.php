@@ -39,391 +39,459 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
      * Test case for filter_mbsyoutube.
      */
     public function test_links() {
-        global $DB, $USER;
+        global $DB;
 
         $this->resetAfterTest(true);
         $this->setAdminUser();
-        $systemcontext = context_system::instance();
+
+        $course = $this->getDataGenerator()->create_course();
+        $context = context_course::instance($course->id);
 
         \core\plugininfo\media::set_enabled_plugins(''); // Disable core mediaplugin.
 
         // Enable filter mbsyoutube.
         $filterobject = new stdClass();
         $filterobject->filter = 'mbsyoutube';
-        $filterobject->contextid = $systemcontext->id;
+        $filterobject->contextid = $context->id;
         $filterobject->active = 1;
         $filterobject->sortorder = 0;
         $DB->insert_record('filter_active', $filterobject);
 
-        $filter = new filter_mbsyoutube($systemcontext, []);
+        $filter = new filter_mbsyoutube($context, []);
 
-        // Expected for the next few assertions.
-        $expected = '<p>YouTube - URL als <a href="xyz"> eingefügt<br><div class="mbsyoutube-responsive mbsyoutube-responsive-16by9'
-            . ' mbsyoutube-wrapper mbsyoutube-twoclickwarning-wrapper" style=""><div class="mbsyoutube-twoclickwarning-boxtext" hidden="hidden">'
-            . '<strong>Privacy Policy</strong><br />Once the video plays, personal <a href="https://policies.google.com/privacy"'
-            . ' target="_blank" style="color:#e3e3e3 !important;">information</a>, such as the IP address, will be sent to YouTube.</div>'
-            . '<div class="mbsyoutube-twoclickwarning-buttonbox" hidden="hidden"><input type="button" class="mbsyoutube-twoclickwarning-button"'
-            . ' value="Start videos ✓" hidden="hidden" /></div><div class="mbsyoutube-status-wrapper" id="yt__statwrap__phpunit__qcQ6x123KwU"'
-            . ' hidden="hidden"><img class="mbsyoutube-img-logo" src="https://www.example.com/moodle/theme/mebis/pix/mebis-logo.png" /><br>'
-            . '<input id="yt__play__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button mbsyoutube-yt-play"'
-            . ' value="Resume video" /><input id="yt__restart__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button'
-            . ' mbsyoutube-yt-restart" value="Restart video" hidden="hidden" /></div><div id="yt__phpunit__qcQ6x123KwU" class="mbsyoutube-frame'
-            . ' mbsyoutube-responsive-item mbsyoutube-ytiframe" allowfullscreen="allowfullscreen" data-extern="{&quot;wmode&quot;:&quot;transparent&quot;'
-            . ',&quot;modestbranding&quot;:1,&quot;rel&quot;:0,&quot;showinfo&quot;:0,&quot;iv_load_policy&quot;:3,&quot;autohide&quot;'
-            . ':1,&quot;enablejsapi&quot;:1}" crossorigin="anonymous"></div><div class="mbsyoutube-bar-overlay" id="yt__baroverlay__phpunit__qcQ6x123KwU"'
-            . ' hidden="hidden"></div></div></p><p>Das ist das Ende!</p>';
+        // Expected significant part for the next few assertions.
+        $expected = '<div class="mbsyoutube-twoclickwarning-boxtext"><strong>Privacy Policy</strong><br />Once the video plays, '
+        . 'personal <a href="https://policies.google.com/privacy" target="_blank" style="color:#e3e3e3 !important;">information'
+        . '</a>, such as the IP address, will be sent to YouTube.</div>
+        <input type="button" class="mbsyoutube-twoclickwarning-button" value="Start videos ✓"/>';
+        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
+        . '"enablejsapi":1}';
+        $expected3 = 'id="yt___phpunit___qcQ6x123KwU"';
+        $expected4 = '<p>YouTube eingefügt<br>';
+        $expected5 = '<p>Das ist das Ende!</p>';
 
         // A a Tag with youtube url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<a href="https://www.youtube.com/watch?v=qcQ6x123KwU">Link zum Video</a></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<a href="https://www.youtube.com/watch?v=qcQ6x123KwU">Link zum Video</a></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube url as plain text.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://www.youtube.com/watch?v=qcQ6x123KwU</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . 'https://www.youtube.com/watch?v=qcQ6x123KwU</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // A a Tag with youtube-nocookie url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<a href="https://www.youtube-nocookie.com/watch?v=qcQ6x123KwU">Link zum Video</a></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<a href="https://www.youtube-nocookie.com/watch?v=qcQ6x123KwU">Link zum Video</a></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube-nocookie url as plain text.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://www.youtube-nocookie.com/watch?v=qcQ6x123KwU</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . 'https://www.youtube-nocookie.com/watch?v=qcQ6x123KwU</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // A a Tag with youtube embed url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<a href="https://www.youtube.com/embed/qcQ6x123KwU">Link zum Video</a></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<a href="https://www.youtube.com/embed/qcQ6x123KwU">Link zum Video</a></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube url as plain embed  text.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://www.youtube.com/embed/qcQ6x123KwU</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . 'https://www.youtube.com/embed/qcQ6x123KwU</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // A a Tag with youtube-nocookie embed  url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<a href="https://www.youtube-nocookie.com/embed/qcQ6x123KwU">Link zum Video</a></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<a href="https://www.youtube-nocookie.com/embed/qcQ6x123KwU">Link zum Video</a></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube-nocookie url as plain embed  text.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://www.youtube-nocookie.com/embed/qcQ6x123KwU</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . 'https://www.youtube-nocookie.com/embed/qcQ6x123KwU</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Iframe with youtube embed url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<iframe width="560" height="315" src="https://www.youtube.com/embed/qcQ6x123KwU"'
-            . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
-            . ' picture-in-picture" allowfullscreen></iframe></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<iframe width="560" height="315" src="https://www.youtube.com/embed/qcQ6x123KwU"'
+        . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
+        . ' picture-in-picture" allowfullscreen></iframe></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Iframe with youtube-nocookie embed url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qcQ6x123KwU"'
-            . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
-            . ' picture-in-picture" allowfullscreen></iframe></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qcQ6x123KwU"'
+        . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
+        . ' picture-in-picture" allowfullscreen></iframe></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Iframe with youtube watch url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<iframe width="560" height="315" src="https://www.youtube.com/watch?v=qcQ6x123KwU"'
-            . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
-            . ' picture-in-picture" allowfullscreen></iframe></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<iframe width="560" height="315" src="https://www.youtube.com/watch?v=qcQ6x123KwU"'
+        . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
+        . ' picture-in-picture" allowfullscreen></iframe></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Iframe with youtube-nocookie watch url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/watch?v=qcQ6x123KwU"'
-            . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
-            . ' picture-in-picture" allowfullscreen></iframe></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/watch?v=qcQ6x123KwU"'
+        . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
+        . ' picture-in-picture" allowfullscreen></iframe></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // A a Tag with youtube short url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<a href="https://youtu.be/qcQ6x123KwU">Link zum Video</a></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<a href="https://youtu.be/qcQ6x123KwU">Link zum Video</a></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube short url as plain text.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://youtu.be/qcQ6x123KwU</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . 'https://youtu.be/qcQ6x123KwU</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Video-Tag with youtube watch url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<video controls="true"><source src="https://www.youtube.com/watch?v=qcQ6x123KwU">'
-            . ' https://www.youtube.com/watch?v=qcQ6x123KwU</video>'
-            . '</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<video controls="true"><source src="https://www.youtube.com/watch?v=qcQ6x123KwU">'
+        . ' https://www.youtube.com/watch?v=qcQ6x123KwU</video>'
+        . '</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Video-Tag with youtube short url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<video controls="true"><source src="https://youtu.be/qcQ6x123KwU">'
-            . ' https://youtu.be/qcQ6x123KwU</video>'
-            . '</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<video controls="true"><source src="https://youtu.be/qcQ6x123KwU">'
+        . ' https://youtu.be/qcQ6x123KwU</video>'
+        . '</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
-    
-        // Expected for the next few assertions.
-        $expected = '<p>YouTube - URL als <a href="xyz"> eingefügt<br><div class="mbsyoutube-responsive mbsyoutube-responsive-16by9'
-            . ' mbsyoutube-wrapper mbsyoutube-twoclickwarning-wrapper" style=""><div class="mbsyoutube-twoclickwarning-boxtext" hidden="hidden">'
-            . '<strong>Privacy Policy</strong><br />Once the video plays, personal <a href="https://policies.google.com/privacy"'
-            . ' target="_blank" style="color:#e3e3e3 !important;">information</a>, such as the IP address, will be sent to YouTube.</div>'
-            . '<div class="mbsyoutube-twoclickwarning-buttonbox" hidden="hidden"><input type="button" class="mbsyoutube-twoclickwarning-button"'
-            . ' value="Start videos ✓" hidden="hidden" /></div><div class="mbsyoutube-status-wrapper" id="yt__statwrap__phpunit__qcQ6x123KwU"'
-            . ' hidden="hidden"><img class="mbsyoutube-img-logo" src="https://www.example.com/moodle/theme/mebis/pix/mebis-logo.png" /><br>'
-            . '<input id="yt__play__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button mbsyoutube-yt-play"'
-            . ' value="Resume video" /><input id="yt__restart__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button'
-            . ' mbsyoutube-yt-restart" value="Restart video" hidden="hidden" /></div><div id="yt__phpunit__qcQ6x123KwU" class="mbsyoutube-frame'
-            . ' mbsyoutube-responsive-item mbsyoutube-ytiframe" allowfullscreen="allowfullscreen" data-extern="{&quot;wmode&quot;:&quot;transparent&quot;'
-            . ',&quot;modestbranding&quot;:1,&quot;rel&quot;:0,&quot;showinfo&quot;:0,&quot;iv_load_policy&quot;:3,&quot;autohide&quot;'
-            . ':1,&quot;enablejsapi&quot;:1,&quot;start&quot;:&quot;15&quot;}" crossorigin="anonymous"></div><div class="mbsyoutube-bar-overlay"'
-            . ' id="yt__baroverlay__phpunit__qcQ6x123KwU"'
-            . ' hidden="hidden"></div></div></p><p>Das ist das Ende!</p>';
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube short url with start parameter.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://youtu.be/qcQ6x123KwU?t=15</p>'
-            . '<p>Das ist das Ende!</p>';
+        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
+        . '"enablejsapi":1,"start":"15"}';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . 'https://youtu.be/qcQ6x123KwU?t=15</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube short url with start parameter.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://youtu.be/qcQ6x123KwU?start=15</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . 'https://youtu.be/qcQ6x123KwU?start=15</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Iframe with youtube watch url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<iframe width="560" height="315" src="https://www.youtube.com/watch?v=qcQ6x123KwU&start=15"'
-            . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
-            . ' picture-in-picture" allowfullscreen></iframe></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<iframe width="560" height="315" src="https://www.youtube.com/watch?v=qcQ6x123KwU&start=15"'
+        . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
+        . ' picture-in-picture" allowfullscreen></iframe></p>'
+        . '<p>Das ist das Ende!</p>';
+
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Iframe with youtube watch url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/watch?v=qcQ6x123KwU&start=15"'
-            . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
-            . ' picture-in-picture" allowfullscreen></iframe></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<iframe width="560" height="315" src="https://www.youtube-nocookie.com/watch?v=qcQ6x123KwU&start=15"'
+        . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
+        . ' picture-in-picture" allowfullscreen></iframe></p>'
+        . '<p>Das ist das Ende!</p>';
+
+        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
+        . '"enablejsapi":1,"start":"15"}';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Video-Tag with youtube watch url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<video controls="true"><source src="https://www.youtube.com/watch?v=qcQ6x123KwU&start=15">'
-            . ' https://www.youtube.com/watch?v=qcQ6x123KwU</video>'
-            . '</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<video controls="true"><source src="https://www.youtube.com/watch?v=qcQ6x123KwU&start=15">'
+        . ' https://www.youtube.com/watch?v=qcQ6x123KwU</video>'
+        . '</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Video-Tag with youtube short url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<video controls="true"><source src="https://youtu.be/qcQ6x123KwU?t=15">'
-            . ' https://youtu.be/qcQ6x123KwU</video>'
-            . '</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<video controls="true"><source src="https://youtu.be/qcQ6x123KwU?t=15">'
+        . ' https://youtu.be/qcQ6x123KwU</video>'
+        . '</p>'
+        . '<p>Das ist das Ende!</p>';
+        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
+        . '"enablejsapi":1,"start":"15"}';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
-
-        // Expected for the next few assertions.
-        $expected = '<p>YouTube - URL als <a href="xyz"> eingefügt<br><div class="mbsyoutube-responsive mbsyoutube-responsive-16by9'
-            . ' mbsyoutube-wrapper mbsyoutube-twoclickwarning-wrapper" style=""><div class="mbsyoutube-twoclickwarning-boxtext" hidden="hidden">'
-            . '<strong>Privacy Policy</strong><br />Once the video plays, personal <a href="https://policies.google.com/privacy"'
-            . ' target="_blank" style="color:#e3e3e3 !important;">information</a>, such as the IP address, will be sent to YouTube.</div>'
-            . '<div class="mbsyoutube-twoclickwarning-buttonbox" hidden="hidden"><input type="button" class="mbsyoutube-twoclickwarning-button"'
-            . ' value="Start videos ✓" hidden="hidden" /></div><div class="mbsyoutube-status-wrapper" id="yt__statwrap__phpunit__qcQ6x123KwU"'
-            . ' hidden="hidden"><img class="mbsyoutube-img-logo" src="https://www.example.com/moodle/theme/mebis/pix/mebis-logo.png" /><br>'
-            . '<input id="yt__play__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button mbsyoutube-yt-play"'
-            . ' value="Resume video" /><input id="yt__restart__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button'
-            . ' mbsyoutube-yt-restart" value="Restart video" hidden="hidden" /></div><div id="yt__phpunit__qcQ6x123KwU" class="mbsyoutube-frame'
-            . ' mbsyoutube-responsive-item mbsyoutube-ytiframe" allowfullscreen="allowfullscreen" data-extern="{&quot;wmode&quot;:&quot;transparent&quot;'
-            . ',&quot;modestbranding&quot;:1,&quot;rel&quot;:0,&quot;showinfo&quot;:0,&quot;iv_load_policy&quot;:3,&quot;autohide&quot;'
-            . ':1,&quot;enablejsapi&quot;:1,&quot;end&quot;:&quot;15&quot;}" crossorigin="anonymous"></div><div class="mbsyoutube-bar-overlay"'
-            . ' id="yt__baroverlay__phpunit__qcQ6x123KwU"'
-            . ' hidden="hidden"></div></div></p><p>Das ist das Ende!</p>';
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube short url with end parameter.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://youtu.be/qcQ6x123KwU?end=15</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . 'https://youtu.be/qcQ6x123KwU?end=15</p>'
+        . '<p>Das ist das Ende!</p>';
+        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
+        . '"enablejsapi":1,"end":"15"}';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube short url with end parameter.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://youtu.be/qcQ6x123KwU?end=15</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<a href="https://youtu.be/qcQ6x123KwU?end=15">Testvideo</a></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Iframe with youtube watch url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<iframe width="560" height="315" src="https://www.youtube.com/watch?v=qcQ6x123KwU&end=15"'
-            . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
-            . ' picture-in-picture" allowfullscreen></iframe></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<iframe width="560" height="315" src="https://www.youtube.com/watch?v=qcQ6x123KwU&end=15"'
+        . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
+        . ' picture-in-picture" allowfullscreen></iframe></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube-nocookie url as plain embed  text.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://www.youtube-nocookie.com/embed/qcQ6x123KwU?end=15</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . 'https://www.youtube-nocookie.com/embed/qcQ6x123KwU?end=15</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Video-Tag with youtube watch url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<video controls="true"><source src="https://www.youtube.com/watch?v=qcQ6x123KwU&end=15">'
-            . ' https://www.youtube.com/watch?v=qcQ6x123KwU</video>'
-            . '</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<video controls="true"><source src="https://www.youtube.com/watch?v=qcQ6x123KwU&end=15">'
+        . ' https://www.youtube.com/watch?v=qcQ6x123KwU</video>'
+        . '</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Video-Tag with youtube short url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<video controls="true"><source src="https://youtu.be/qcQ6x123KwU?end=15">'
-            . ' https://youtu.be/qcQ6x123KwU</video>'
-            . '</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<video controls="true"><source src="https://youtu.be/qcQ6x123KwU?end=15">'
+        . ' https://youtu.be/qcQ6x123KwU</video>'
+        . '</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
-        // Expected for the next few assertions.
-        $expected = '<p>YouTube - URL als <a href="xyz"> eingefügt<br><div class="mbsyoutube-responsive mbsyoutube-responsive-16by9'
-            . ' mbsyoutube-wrapper mbsyoutube-twoclickwarning-wrapper" style=""><div class="mbsyoutube-twoclickwarning-boxtext" hidden="hidden">'
-            . '<strong>Privacy Policy</strong><br />Once the video plays, personal <a href="https://policies.google.com/privacy"'
-            . ' target="_blank" style="color:#e3e3e3 !important;">information</a>, such as the IP address, will be sent to YouTube.</div>'
-            . '<div class="mbsyoutube-twoclickwarning-buttonbox" hidden="hidden"><input type="button" class="mbsyoutube-twoclickwarning-button"'
-            . ' value="Start videos ✓" hidden="hidden" /></div><div class="mbsyoutube-status-wrapper" id="yt__statwrap__phpunit__qcQ6x123KwU"'
-            . ' hidden="hidden"><img class="mbsyoutube-img-logo" src="https://www.example.com/moodle/theme/mebis/pix/mebis-logo.png" /><br>'
-            . '<input id="yt__play__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button mbsyoutube-yt-play"'
-            . ' value="Resume video" /><input id="yt__restart__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button'
-            . ' mbsyoutube-yt-restart" value="Restart video" hidden="hidden" /></div><div id="yt__phpunit__qcQ6x123KwU" class="mbsyoutube-frame'
-            . ' mbsyoutube-responsive-item mbsyoutube-ytiframe" allowfullscreen="allowfullscreen" data-extern="{&quot;wmode&quot;:&quot;transparent&quot;'
-            . ',&quot;modestbranding&quot;:1,&quot;rel&quot;:0,&quot;showinfo&quot;:0,&quot;iv_load_policy&quot;:3,&quot;autohide&quot;'
-            . ':1,&quot;enablejsapi&quot;:1,&quot;start&quot;:&quot;5&quot;,&quot;end&quot;:&quot;15&quot;}" crossorigin="anonymous">'
-            . '</div><div class="mbsyoutube-bar-overlay" id="yt__baroverlay__phpunit__qcQ6x123KwU"'
-            . ' hidden="hidden"></div></div></p><p>Das ist das Ende!</p>';
-
-        // Youtube short url with end parameter.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://youtu.be/qcQ6x123KwU?start=5&end=15</p>'
-            . '<p>Das ist das Ende!</p>';
+        // Youtube short url with start and end parameter.
+        $youtube = '<p>YouTube eingefügt<br>'
+        . 'https://youtu.be/qcQ6x123KwU?start=5&end=15</p>'
+        . '<p>Das ist das Ende!</p>';
+        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
+        . '"enablejsapi":1,"start":"5","end":"15"}';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Iframe with youtube watch url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<iframe width="560" height="315" src="https://www.youtube.com/watch?v=qcQ6x123KwU&start=5&end=15"'
-            . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
-            . ' picture-in-picture" allowfullscreen></iframe></p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<iframe width="560" height="315" src="https://www.youtube.com/watch?v=qcQ6x123KwU&start=5&end=15"'
+        . ' frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope;'
+        . ' picture-in-picture" allowfullscreen></iframe></p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Video-Tag with youtube watch url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<video controls="true"><source src="https://www.youtube.com/watch?v=qcQ6x123KwU&start=5&end=15">'
-            . ' https://www.youtube.com/watch?v=qcQ6x123KwU</video>'
-            . '</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<video controls="true"><source src="https://www.youtube.com/watch?v=qcQ6x123KwU&start=5&end=15">'
+        . ' https://www.youtube.com/watch?v=qcQ6x123KwU</video>'
+        . '</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Video-Tag with youtube short url.
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<video controls="true"><source src="https://youtu.be/qcQ6x123KwU?start=5&end=15">'
-            . ' https://youtu.be/qcQ6x123KwU</video>'
-            . '</p>'
-            . '<p>Das ist das Ende!</p>';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<video controls="true"><source src="https://youtu.be/qcQ6x123KwU?start=5&end=15">'
+        . ' https://youtu.be/qcQ6x123KwU</video>'
+        . '</p>'
+        . '<p>Das ist das Ende!</p>';
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
 
         // Testcase: multiple YouTube Videos combined.
-        $expected = '<p>YouTube - URL als <a href="xyz"> eingefügt<br><div class="mbsyoutube-responsive mbsyoutube-responsive-16by9'
-            . ' mbsyoutube-wrapper mbsyoutube-twoclickwarning-wrapper" style=""><div class="mbsyoutube-twoclickwarning-boxtext"'
-            . ' hidden="hidden"><strong>Privacy Policy</strong>'
-            . '<br />Once the video plays, personal <a href="https://policies.google.com/privacy" target="_blank" style="color:#e3e3e3'
-            . ' !important;">information</a>, such as the IP address, will be sent to YouTube.</div>'
-            . '<div class="mbsyoutube-twoclickwarning-buttonbox" hidden="hidden"><input type="button" class="mbsyoutube-twoclickwarning-button"'
-            . ' value="Start videos ✓" hidden="hidden" /></div><div class="mbsyoutube-status-wrapper" id="yt__statwrap__phpunit__qcQ6x123KwU"'
-            . ' hidden="hidden"><img class="mbsyoutube-img-logo" src="https://www.example.com/moodle/theme/mebis/pix/mebis-logo.png"'
-            . ' /><br><input id="yt__play__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button mbsyoutube-yt-play"'
-            . ' value="Resume video" /><input id="yt__restart__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button'
-            . ' mbsyoutube-yt-restart" value="Restart video" hidden="hidden" /></div><div id="yt__phpunit__qcQ6x123KwU"'
-            . ' class="mbsyoutube-frame mbsyoutube-responsive-item mbsyoutube-ytiframe" allowfullscreen="allowfullscreen"'
-            . ' data-extern="{&quot;wmode&quot;:&quot;transparent&quot;,&quot;modestbranding&quot;:1,&quot;rel&quot;:0,&quot;showinfo&quot;:0'
-            . ',&quot;iv_load_policy&quot;:3,&quot;autohide&quot;:1,&quot;enablejsapi&quot;:1,&quot;start&quot;:&quot;5&quot;,'
-            . '&quot;end&quot;:&quot;15&quot;}" crossorigin="anonymous"></div><div class="mbsyoutube-bar-overlay" '
-            . 'id="yt__baroverlay__phpunit__qcQ6x123KwU" hidden="hidden"></div></div></p><p>Das ist das Ende!</p><p>YouTube - '
-            . 'URL als <a href="xyz"> eingefügt<br><div class="mbsyoutube-responsive mbsyoutube-responsive-16by9 mbsyoutube-wrapper '
-            . 'mbsyoutube-twoclickwarning-wrapper" style=""><div class="mbsyoutube-twoclickwarning-boxtext" hidden="hidden">'
-            . '<strong>Privacy Policy</strong><br />Once the video plays, personal <a href="https://policies.google.com/privacy" '
-            . 'target="_blank" style="color:#e3e3e3 !important;">information</a>, such as the IP address, will be sent to YouTube.</div>'
-            . '<div class="mbsyoutube-twoclickwarning-buttonbox" hidden="hidden"><input type="button" '
-            . 'class="mbsyoutube-twoclickwarning-button" value="Start videos ✓" hidden="hidden" /></div>'
-            . '<div class="mbsyoutube-status-wrapper" id="yt__statwrap__phpunit__qcQ6x123KwU" hidden="hidden">'
-            . '<img class="mbsyoutube-img-logo" src="https://www.example.com/moodle/theme/mebis/pix/mebis-logo.png" /><br>'
-            . '<input id="yt__play__phpunit__qcQ6x123KwU" type="button" class="mbsyoutube-twoclickwarning-button mbsyoutube-yt-play" '
-            . 'value="Resume video" /><input id="yt__restart__phpunit__qcQ6x123KwU" type="button" '
-            . 'class="mbsyoutube-twoclickwarning-button mbsyoutube-yt-restart" value="Restart video" hidden="hidden" />'
-            . '</div><div id="yt__phpunit__qcQ6x123KwU" class="mbsyoutube-frame mbsyoutube-responsive-item mbsyoutube-ytiframe" '
-            . 'allowfullscreen="allowfullscreen" data-extern="{&quot;wmode&quot;:&quot;transparent&quot;,&quot;modestbranding&quot;:1,'
-            . '&quot;rel&quot;:0,&quot;showinfo&quot;:0,&quot;iv_load_policy&quot;:3,&quot;autohide&quot;:1,&quot;enablejsapi&quot;'
-            . ':1,&quot;start&quot;:&quot;5&quot;,&quot;end&quot;:&quot;15&quot;}" crossorigin="anonymous"></div>'
-            . '<div class="mbsyoutube-bar-overlay" id="yt__baroverlay__phpunit__qcQ6x123KwU" hidden="hidden">'
-            . '</div></div></p><p>Das ist das Ende!</p>';
-        $youtube = '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . '<video controls="true"><source src="https://youtu.be/qcQ6x123KwU?start=5&end=15">'
-            . ' https://youtu.be/qcQ6x123KwU</video>'
-            . '</p>'
-            . '<p>Das ist das Ende!</p>';
-        $youtube .= '<p>YouTube - URL als <a href="xyz"> eingefügt<br>'
-            . 'https://youtu.be/qcQ6x123KwU?start=5&end=15</p>'
-            . '<p>Das ist das Ende!</p>';
+        $expected = 'id="yt___phpunit___qcQ6x123KwU"';
+        $expected2 = 'id="yt___phpunit___qcQ6x123KwUtz"';
+        $youtube = '<p>YouTube eingefügt<br>'
+        . '<video controls="true"><source src="https://youtu.be/qcQ6x123KwUtz?start=3&end=13">'
+        . ' https://youtu.be/qcQ6x123KwU</video>'
+        . '</p>'
+        . '<p>Das ist das Ende!</p>'
+        . '<p>YouTube eingefügt 2<br>'
+        . 'https://youtu.be/qcQ6x123KwU?start=5&end=15</p>'
+        . '<p>Das ist das Ende 2!</p>';
+        $expected3 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
+        . '"enablejsapi":1,"start":"3","end":"13"}';
+        $expected6 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
+        . '"enablejsapi":1,"start":"5","end":"15"}';
+        $expected7 = '<p>YouTube eingefügt 2<br>';
+        $expected8 = '<p>Das ist das Ende 2!</p>';
+
         $filtered = $filter->filter($youtube);
-        $this->assertEquals($expected, $filtered);
+        $this->assertStringContainsString($expected, $filtered);
+        $this->assertStringContainsString($expected2, $filtered);
+        $this->assertStringContainsString($expected3, $filtered);
+        $this->assertStringContainsString($expected4, $filtered);
+        $this->assertStringContainsString($expected5, $filtered);
+        $this->assertStringContainsString($expected6, $filtered);
+        $this->assertStringContainsString($expected7, $filtered);
+        $this->assertStringContainsString($expected8, $filtered);
     }
 }
-?>

@@ -65,16 +65,22 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         // When adding a new regex command, there must be added a new if clause in the callback function, too.
         $regexyoutube = '/('
-            . '((<video[^>]+><source[^>]?src=")(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)(">[^<]+<\/video>)?)'
-            . '|((<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)("?[^<]+<\/a>)?)'
-            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\/embed\/\b)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)"(.*)>(.*)<\/iframe>)'
-            . '|(<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/embed\/)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?("?[^<]+<\/a>)?)'
-            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)([\w\d-]+)([\w@\?^=%&\/~+#-;]+)?)"(.*)>(.*)<\/iframe>)'
+            . '((<video[^>]+><source[^>]?src=")(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)'
+            . '(\/watch\?v=)([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)'
+            . '(">[^<]+<\/video>)?)'
+            . '|((<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)'
+            . '([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)("?[^<]+<\/a>)?)'
+            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\/embed\/\b)'
+            . '([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)"(.*)>(.*)<\/iframe>)'
+            . '|(<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/embed\/)'
+            . '([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?("?[^<]+<\/a>)?)'
+            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)'
+            . '([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)"(.*)>(.*)<\/iframe>)'
             . ')/';
         $regexyoutubeshorturl = '/('
-            . '((<a[^>]?href=")((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)"?[^<]+<\/a>)'
-            . '|((<video[^>]+><source[^>]?src=")((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)"?[^<]+<\/video>)'
-            . '|((http|https):\/\/youtu.be\/([\w\d-_]+)([\w@\?^=%&\/~+#-]+)?)'
+            . '((<a[^>]?href=")((http|https):\/\/youtu.be\/([\w\d\-_]+)([\w@\?^=%&\/~+#\-]+)?)"?[^<]+<\/a>)'
+            . '|((<video[^>]+><source[^>]?src=")((http|https):\/\/youtu.be\/([\w\d\-_]+)([\w@\?^=%&\/~+#\-]+)?)"?[^<]+<\/video>)'
+            . '|((http|https):\/\/youtu.be\/([\w\d\-_]+)([\w@\?^=%&\/~+#\-]+)?)'
             . ')/';
 
         $patternsandcallbacks = [
@@ -125,10 +131,6 @@ class filter_mbsyoutube extends moodle_text_filter {
         $dom->loadHTML($matchingtag);
         libxml_clear_errors();
 
-        if ($elem = $dom->getElementsByTagName('video')->item(0)) {
-        } elseif ($elem = $dom->getElementsByTagName('iframe')->item(0)) {
-        }
-
         if (isset($elem)) {
             $styles = $elem->getAttribute('style');
             if (strlen($styles)) {
@@ -150,6 +152,13 @@ class filter_mbsyoutube extends moodle_text_filter {
         }
 
         list($context, $course, $cm) = get_context_info_array($this->context->id);
+
+        // Set course id to a default value in case of no courseid exists. E.g. in system context.
+        if (!isset($course->id)) {
+            $course = new \stdClass();
+            $course->id = 0;
+        }
+
         $this->courseid = $course->id;
         return $this->courseid;
     }
@@ -205,7 +214,7 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         $urlparam = self::build_url_querystring($params);
         array_push($this->youtubevideoids, $vid);
-        $iframe = self::render_two_click_version_youtube($vid, $hasuseraccepted, $urlparam['paramarr'], $styles);
+        $iframe = $this->render_two_click_version_youtube($vid, $hasuseraccepted, $urlparam['paramarr'], $styles);
 
         return $iframe;
     }
@@ -237,7 +246,7 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         array_push($this->youtubevideoids, $vid);
 
-        $ytwrapper = self::render_two_click_version_youtube($vid, $hasuseraccepted, $urlparam['paramarr'], $styles);
+        $ytwrapper = $this->render_two_click_version_youtube($vid, $hasuseraccepted, $urlparam['paramarr'], $styles);
         return $ytwrapper;
     }
 
@@ -251,101 +260,36 @@ class filter_mbsyoutube extends moodle_text_filter {
      * @return string HTML markup
      */
     private function render_two_click_version_youtube($videoid, $hasuseraccepted = false, $urlparam = [], $styles = '') {
+        global $OUTPUT;
+
+        $data = new stdClass();
+        $data->mbswrapperstyles = $styles;
+        $data->videoid = $videoid;
+
         if (PHPUNIT_TEST) {
-            $uniqid = 'phpunit';
+            $data->uniqid = 'phpunit';
         } else {
-            $uniqid = uniqid();
+            $data->uniqid = uniqid();
         }
 
-        $iframeparams = [
-            'id' => 'yt__' . $uniqid . '__' . $videoid,
-            'class' => 'mbsyoutube-frame mbsyoutube-responsive-item mbsyoutube-ytiframe',
-            'allowfullscreen' => 'allowfullscreen',
-            'data-extern' => json_encode($urlparam),
-            'crossorigin' => 'anonymous'
-        ];
-
-        $inputtagparam = [
-            'type' => 'button',
-            'class' => 'mbsyoutube-twoclickwarning-button',
-            'value' => get_string('mbswatchvideo', 'filter_mbsyoutube')
-        ];
-
-        $inputtag2param = [
-            'id' => 'yt__play__' . $uniqid . '__' . $videoid,
-            'type' => 'button',
-            'class' => 'mbsyoutube-twoclickwarning-button mbsyoutube-yt-play',
-            'value' => get_string('mbsresumevideobtn', 'filter_mbsyoutube')
-        ];
-        $inputtag3param = [
-            'id' => 'yt__restart__' . $uniqid . '__' . $videoid,
-            'type' => 'button',
-            'class' => 'mbsyoutube-twoclickwarning-button mbsyoutube-yt-restart',
-            'value' => get_string('mbsrestartvideobtn', 'filter_mbsyoutube'),
-            'hidden' => 'hidden'
-        ];
-        $divtag1param = [
-            'class' => 'mbsyoutube-twoclickwarning-boxtext'
-        ];
-
-        $divtag2param = [
-            'class' => 'mbsyoutube-twoclickwarning-buttonbox'
-        ];
-
-        $divtag3param = [
-            'class' => 'mbsyoutube-status-wrapper',
-            'id' => 'yt__statwrap__' . $uniqid . '__' . $videoid,
-            'hidden' => 'hidden'
-        ];
-
-        $divtag4param = [
-            'class' => 'mbsyoutube-bar-overlay',
-            'id' => 'yt__baroverlay__' . $uniqid . '__' . $videoid,
-            'hidden' => 'hidden'
-        ];
-
-        $imgtagparam = [
-            'class' => 'mbsyoutube-img-logo',
-            'src' => new moodle_url('/theme/mebis/pix/mebis-logo.png')
-        ];
+        $data->popupnurl = new moodle_url('/filter/mbsyoutube/video_popup.php', ['vid' => $videoid]);
+        $data->mbsplayerdetails = json_encode($urlparam);
+        $data->mbstwoclickboxtext = get_string('mbstwoclickboxtext', 'filter_mbsyoutube');
+        $data->mbsopenpopup = get_string('mbsopenpopup', 'filter_mbsyoutube');
+        $data->mbswatchvideo = get_string('mbswatchvideo', 'filter_mbsyoutube');
+        $data->mbsresumevideobtn = get_string('mbsresumevideobtn', 'filter_mbsyoutube');
+        $data->mbsrestartvideobtn = get_string('mbsrestartvideobtn', 'filter_mbsyoutube');
+        $data->mebislogourl = new moodle_url('/theme/mebis/pix/mebis-logo.png');
 
         if ($hasuseraccepted) {
-            $additionaliframparams = [];
-            $iframeparams = array_merge($iframeparams, $additionaliframparams);
-            $additionalinputparams = ['hidden' => 'hidden'];
-            $inputtagparam = array_merge($inputtagparam, $additionalinputparams);
-            $additionalinput2params = [];
-            $inputtag2param = array_merge($inputtag2param, $additionalinput2params);
-            $additionaldivtag1param = ['hidden' => 'hidden'];
-            $divtag1param = array_merge($divtag1param, $additionaldivtag1param);
-            $additionaldivtag2param = ['hidden' => 'hidden'];
-            $divtag2param = array_merge($divtag2param, $additionaldivtag2param);
+            $data->optionacceptedhidden = ' hidden="hidden"';
+            $data->optionnotacceptedhidden = "";
         } else {
-            $additionaliframparams = [
-                'src' => '',
-                'hidden' => 'hidden'
-            ];
-            $iframeparams = array_merge($iframeparams, $additionaliframparams);
+            $data->optionacceptedhidden = "";
+            $data->optionnotacceptedhidden = ' hidden="hidden"';
         }
-        // Will be replaced by the YouTube API by the player.
-        $iframe = html_writer::tag('div', '', $iframeparams);
 
-        $divtag1 = html_writer::tag('div', get_string('mbstwoclickboxtext', 'filter_mbsyoutube'), $divtag1param);
-
-        $inputtag = html_writer::empty_tag('input', $inputtagparam);
-        $inputtag2 = html_writer::empty_tag('input', $inputtag2param);
-        $inputtag3 = html_writer::empty_tag('input', $inputtag3param);
-
-        $imgtag = html_writer::empty_tag('img', $imgtagparam);
-
-        $divtag2 = html_writer::tag('div', $inputtag, $divtag2param);
-
-        $divtag3 = html_writer::tag('div', $imgtag . "<br>" . $inputtag2 . $inputtag3, $divtag3param);
-        $divtag4 = html_writer::tag('div', "", $divtag4param);
-        $classes = ['class' => 'mbsyoutube-responsive mbsyoutube-responsive-16by9 mbsyoutube-wrapper mbsyoutube-twoclickwarning-wrapper', 'style' => $styles];
-        $wrappertag = html_writer::tag('div', $divtag1 . $divtag2 . $divtag3 . $iframe . $divtag4, $classes);
-
-        return $wrappertag;
+        return $OUTPUT->render_from_template('filter_mbsyoutube/mbsyoutubetwoclick', $data);
     }
 
     /**
@@ -364,7 +308,6 @@ class filter_mbsyoutube extends moodle_text_filter {
             'iv_load_policy' => 3,
             'autohide' => 1,
             'enablejsapi' => 1
-
         ];
 
         if (isset($params['query'])) {
@@ -386,4 +329,4 @@ class filter_mbsyoutube extends moodle_text_filter {
         }
         return $urlparamret;
     }
-}    
+}

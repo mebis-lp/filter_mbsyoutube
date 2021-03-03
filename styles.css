@@ -107,3 +107,40 @@
 .mbsyoutube-type-audio {
     padding: 45px;
 }
+
+.mbsyoutube-message-show {
+        display: none;
+}
+
+/* Rendering YouTube two click solution in messages area. --- Beginning */
+
+div.message>div>.mbsyoutube-twoclickwarning-wrapper {
+    height: 100px;
+}
+
+div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-twoclickwarning-buttonbox.mbsyoutube-message-hidden {
+    display: none;
+}
+
+div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-ytiframe {
+    display: none;
+}
+
+div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-twoclickwarning-buttonbox.mbsyoutube-message-show {
+    display: block;
+}
+
+div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-twoclickwarning-buttonbox>.mbsyoutube-twoclickwarning-boxtext {
+    color: #e3e3e3 !important;
+    text-align: center;
+    margin-top: 0px;
+    padding: 10px;
+}
+
+div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-twoclickwarning-boxtext {
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 10px;
+}
+/* Rendering YouTube two click solution in messages area. --- End */
