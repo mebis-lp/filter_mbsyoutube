@@ -66,7 +66,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
 
     return {
         init: function (args) {
-            window.console.log(args);
             params = args;
 
             // If there is already a mbsembed yt confirm button then bind the click event.

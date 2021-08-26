@@ -25,18 +25,39 @@ define(['jquery'], function ($) {
 
     return {
         init: function (args) {
-
             var videos = {};
-            $('.mbsyoutube-ytiframe').each(function () {
-                var playerid = this.id.split("___");
-                var videoid = playerid[2];
-                var videouniqid = playerid[1];
-                videos = getJsonObjectFromIdAttribut(videoid, 'data-extern', videouniqid);
+            initPlayer();
+
+            // If there is no yt confirm button. Observe the dome if there will be a change.
+            var observer = new MutationObserver(function () {
+                // Fired when a mutation occurs.
+                if ($('.mbsyoutube-ytiframe').length > 0) {
+                    initPlayer();
+                }
             });
 
-            $(document).ready(function () {
-                loadPlayer();
+            // Define what element should be observed by the observer
+            // and what types of mutations trigger the callback
+            observer.observe(document, {
+                subtree: true,
+                attributes: true
             });
+
+            /**
+             * Initialize the Player.
+             */
+            function initPlayer() {
+                $('.mbsyoutube-ytiframe').each(function () {
+                    var playerid = this.id.split("___");
+                    var videoid = playerid[2];
+                    var videouniqid = playerid[1];
+                    videos = getJsonObjectFromIdAttribut(videoid, 'data-extern', videouniqid);
+                });
+
+                $(document).ready(function () {
+                    loadPlayer();
+                });
+            }
 
             /**
              * Sets the YouTube API to Dome and initiats the players
@@ -68,8 +89,9 @@ define(['jquery'], function ($) {
 
             /**
              * Initiates one YouTube player
-             * @param string videoid
-             * @param array ytparam
+             * @param {string} videoid
+             * @param {*} ytparam
+             * @param {string} uniqeid
              */
             function onYouTubePlayer(videoid, ytparam, uniqeid) {
                 player[uniqeid] = new YT.Player('yt___' + uniqeid + '___' + videoid, {
@@ -96,7 +118,7 @@ define(['jquery'], function ($) {
 
             /**
              * Callback Player State event listener.
-             * @param object event
+             * @param {object} event
              */
             function onPlayerStateChange(event) {
 
@@ -140,18 +162,20 @@ define(['jquery'], function ($) {
 
             /**
              * Catches Errors.
-             * @param object event
+             * @param {object} event
              */
             function catchError(event) {
                 if (event.data == 100) {
-                    console.log("Error - The video is not accessable!");
+                    window.console.log("Error - The video is not accessable!");
                 }
             }
 
             /**
-             * Makes a json object from an data-attribut value of a tag.
-             * @param string videoid
-             * @param string attribut
+             * Makes a json object from an data - attribut value of a tag.
+             * @param {string} videoid
+             * @param {string} attribut
+             * @param {string} uniqid
+             * @returns {array}
              */
             function getJsonObjectFromIdAttribut(videoid, attribut, uniqid) {
                 var jsonobj = $.parseJSON($('#yt___' + uniqid + '___' + videoid).attr(attribut));
