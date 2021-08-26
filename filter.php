@@ -100,7 +100,7 @@ class filter_mbsyoutube extends moodle_text_filter {
         }
         $youtubevideoids = $this->youtubevideoids;
 
-        if (count($youtubevideoids) > 0) {
+        if (count($youtubevideoids) > 0 || $PAGE->course->format == 'tiles') {
 
             if (!$this->get_hasuseraccepted()) {
                 $params = ['courseid' => $this->get_courseid()];
