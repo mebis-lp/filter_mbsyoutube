@@ -51,15 +51,15 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
      */
     function initClickEvent() {
         // Nothing to do, because there is no button to bind an event.
-        if ($('.mbsembed-yt-confirme').length == 0) {
+        if ($('.mbsyoutube-confirm').length == 0) {
             return;
         }
 
         // Unbind the click event, because otherwise the event could be bind multiple times.
-        $('.mbsembed-yt-confirme').unbind();
+        $('.mbsyoutube-confirm').unbind();
 
         // Now bind the click event.
-        $('.mbsembed-yt-confirme').click(function () {
+        $('.mbsyoutube-confirm').click(function () {
             onVideoAcceptanceChange("YouTube");
         });
     }
@@ -69,7 +69,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
             params = args;
 
             // If there is already a mbsembed yt confirm button then bind the click event.
-            if ($('.mbsembed-yt-confirme').length != 0) {
+            if ($('.mbsyoutube-confirm').length != 0) {
                 initClickEvent();
                 return;
             }
@@ -77,7 +77,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
             // If there is no yt confirm button. Observe the dome if there will be a change.
             var observer = new MutationObserver(function () {
                 // Fired when a mutation occurs.
-                if ($('.mbsembed-yt-confirme').length > 0) {
+                if ($('.mbsyoutube-confirm').length > 0) {
                     initClickEvent();
                 }
             });
