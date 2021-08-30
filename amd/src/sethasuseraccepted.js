@@ -26,8 +26,11 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
 
     var params;
 
+    /**
+     * Mark a medium as accepted.
+     * @param {string} provider
+     */
     function onVideoAcceptanceChange(provider) {
-
         ajax.call([{
             methodname: 'filter_mbsyoutube_setvideoprovidercache',
             args: {
@@ -41,15 +44,49 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notifica
             },
             fail: notification.exception
         }]);
+    }
 
+    /**
+     * Initialize the click event
+     */
+    function initClickEvent() {
+        // Nothing to do, because there is no button to bind an event.
+        if ($('.mbsyoutube-confirm').length == 0) {
+            return;
+        }
+
+        // Unbind the click event, because otherwise the event could be bind multiple times.
+        $('.mbsyoutube-confirm').unbind();
+
+        // Now bind the click event.
+        $('.mbsyoutube-confirm').click(function () {
+            onVideoAcceptanceChange("YouTube");
+        });
     }
 
     return {
         init: function (args) {
             params = args;
 
-            $('.mbsyoutube-twoclickwarning-button').click(function () {
-                onVideoAcceptanceChange("YouTube");
+            // If there is already a mbsembed yt confirm button then bind the click event.
+            if ($('.mbsyoutube-confirm').length != 0) {
+                initClickEvent();
+                return;
+            }
+
+            // If there is no yt confirm button. Observe the dome if there will be a change.
+            var observer = new MutationObserver(function () {
+                // Fired when a mutation occurs.
+                if ($('.mbsyoutube-confirm').length > 0) {
+                    initClickEvent();
+                }
+            });
+
+            // Define what element should be observed by the observer
+            // and what types of mutations trigger the callback
+            observer.observe(document, {
+                subtree: true,
+                attributes: true
             });
         }
     };
