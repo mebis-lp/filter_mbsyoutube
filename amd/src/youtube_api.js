@@ -22,11 +22,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import Ajax from 'core/ajax';
+
 let videos = {};
 let players = {};
 
 export const init = () => {
-    initPlayer();
+    // need to wait for the load event, since the iframe_api might not be there yet.
+    window.addEventListener('load', initPlayer, false);
 
     // If there is no mbsyoutube-ytiframe yet: Observe the DOM if there will be a change.
     var observer = new MutationObserver(function () {

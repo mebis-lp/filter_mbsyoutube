@@ -24,11 +24,25 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['cachedef_mbsexternalsourceaccept'] = "Caches the confirmation to view YouTube videos.";
 $string['filtername'] = 'Render two click solution for YouTube videos.';
 $string['privacy:metadata'] = 'The embed mebis content filter plugin does not store any personal data.';
 $string['mbsopenpopup'] = 'Open video player.';
 $string['mbstwoclickboxtext'] = '<strong>Privacy Policy</strong>'
     . '<br />Once the video plays, personal <a href="https://policies.google.com/privacy" '
     . 'target="_blank" style="color:#e3e3e3 !important;">information</a>, such as the IP address, will be sent to YouTube.';
+$string['mbsyoutube_twoclickacceptancebuttontext'] = 'Text for the acceptance button.';
+$string['mbsyoutube_twoclickacceptancebuttontext_desc'] = 'This text will appear on the button to accept '
+    . 'the privacy policy and proceed to access and play the video.';
+$string['mbsyoutube_twoclickacceptancebuttonmsgtext'] = 'Text for the acceptance button in a user message.';
+$string['mbsyoutube_twoclickacceptancebuttonmsgtext_desc'] = 'This text will appear on the button to accept '
+        . 'proceed to access and play the video when this is sent in a message.';
+$string['mbsyoutube_twoclickbackground'] = 'Background for the two click solution.';
+$string['mbsyoutube_twoclickbackground_desc'] = 'Upload an image to use as background for the two click solution. '
+        . 'This will tile the overlay asking to accept to watch the video.';
+$string['mbsyoutube_twoclicklogo'] = 'Logo for the two click solution.';
+$string['mbsyoutube_twoclicklogo_desc'] = 'Upload an image to use as logo for the two click solution. '
+    . 'This will appear in the overlay asking to accept to watch the video.';
+$string['mbsyoutube_twoclickmessage'] = 'Message for the two click solution.';
+$string['mbsyoutube_twoclickmessage_desc'] = 'Enter a message informing about the privacy policy. '
+        . 'This will appear in the overlay asking to accept to watch the video.';
 $string['mbswatchvideo'] = 'Start videos ✓';

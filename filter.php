@@ -31,6 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class filter_mbsyoutube extends moodle_text_filter {
+
     /**
      * @var array $youtubevideoids Array of all YouTube Video IDs of course page.
      */
@@ -118,28 +119,23 @@ class filter_mbsyoutube extends moodle_text_filter {
     }
 
     /**
-     * Extracts the html attributes from string.
-     * @param string $matchingtag
+     * Form the html attributes needed for the wrapper.
      * @return string $styles
      */
-    protected function get_style_attributs($matchingtag) {
-
-        if (PHPUNIT_TEST) {
-            return '';
+    protected function get_style_attributs() {
+        if ($backgroundfile = get_config('filter_mbsyoutube', 'mbsyoutube_two_click_background')) {
+            $backgroundurl = moodle_url::make_pluginfile_url(
+                context_system::instance()->id,
+                'filter_mbsyoutube',
+                'background',
+                0,
+                null,
+                $backgroundfile
+            );
+        } else {
+            $backgroundurl =  null;
         }
-
-        $styles = '';
-        $dom = new DOMDocument();
-        libxml_use_internal_errors(true);
-        $dom->loadHTML($matchingtag);
-        libxml_clear_errors();
-
-        if (isset($elem)) {
-            $styles = $elem->getAttribute('style');
-            if (strlen($styles)) {
-                $styles = $styles . ' padding:0; margin: 5px;';
-            }
-        }
+        $styles = 'background-image: url(' . $backgroundurl . ');';
         return $styles;
     }
 
@@ -163,7 +159,7 @@ class filter_mbsyoutube extends moodle_text_filter {
      */
     protected function youtube_callback($match) {
         $hasuseraccepted = $this->get_hasuseraccepted();
-        $styles = $this->get_style_attributs($match[1]);
+        $styles = $this->get_style_attributs();
 
         // The following arrays containing all possible offset of the $match array.
         $videoffsets = [10, 21, 30, 41, 51];
@@ -197,7 +193,7 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         $hasuseraccepted = $this->get_hasuseraccepted();
 
-        $styles = $this->get_style_attributs($match[1]);
+        $styles = $this->get_style_attributs();
 
         // The order of the if clauses has to be the same as the order of the regex commands.
         if (is_string($match[6]) && strlen($match[6]) > 1) {
@@ -228,7 +224,7 @@ class filter_mbsyoutube extends moodle_text_filter {
      * @return string HTML markup
      */
     private function render_two_click_version_youtube($videoid, $hasuseraccepted = false, $urlparam = [], $styles = '') {
-        global $OUTPUT, $CFG;
+        global $OUTPUT;
 
         $data = new stdClass();
         $data->mbswrapperstyles = $styles;
@@ -241,11 +237,23 @@ class filter_mbsyoutube extends moodle_text_filter {
         }
 
         $data->popupnurl = new moodle_url('/filter/mbsyoutube/video_popup.php', ['vid' => $videoid]);
-        $data->mbsplayerdetails = json_encode($urlparam);
+        $data->mbsplayerdetails = json_encode($urlparam, JSON_UNESCAPED_SLASHES);
         $data->mbstwoclickboxtext = get_string('mbstwoclickboxtext', 'filter_mbsyoutube');
-        $data->mbsopenpopup = get_string('mbsopenpopup', 'filter_mbsyoutube');
-        $data->mbswatchvideo = get_string('mbswatchvideo', 'filter_mbsyoutube');
-        $data->mebislogourl = new moodle_url($CFG->wwwroot . '/theme/mebis/pix/mebis-logo.png');
+        $data->mbsopenpopup = get_config('filter_mbsyoutube', 'mbsyoutube_two_click_acceptancebuttonmsgtext');
+        $data->mbswatchvideo = get_config('filter_mbsyoutube', 'mbsyoutube_two_click_acceptancebuttontext');
+        if ($logo = get_config('filter_mbsyoutube', 'mbsyoutube_two_click_logo')) {
+            $logourl = moodle_url::make_pluginfile_url(
+                context_system::instance()->id,
+                'filter_mbsyoutube',
+                'logo',
+                0,
+                null,
+                $logo
+            );
+        } else {
+            $logourl = null;
+        }
+        $data->mebislogourl = $logourl;
 
         if ($hasuseraccepted) {
             $data->optionacceptedhidden = ' hidden="hidden"';
@@ -264,16 +272,13 @@ class filter_mbsyoutube extends moodle_text_filter {
      * @param array $params
      * @return string URL parameters string
      */
-    private static function build_url_querystring($params) {
-
+    private function build_url_querystring($params) {
+        global $CFG;
         $preconfparam = [
-            'wmode' => 'transparent',  // Has to be on first place.
             'modestbranding' => 1,
-            'rel' => 0,
-            'showinfo' => 0,
             'iv_load_policy' => 3,
-            'autohide' => 1,
-            'enablejsapi' => 1
+            'enablejsapi' => 1,
+            'origin' => $CFG->wwwroot
         ];
 
         if (isset($params['query'])) {
