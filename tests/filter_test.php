@@ -63,7 +63,7 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
         $expected = '<div class="mbsyoutube-twoclickwarning-boxtext"><strong>Privacy Policy</strong><br />Once the video plays, '
         . 'personal <a href="https://policies.google.com/privacy" target="_blank" style="color:#e3e3e3 !important;">information'
         . '</a>, such as the IP address, will be sent to YouTube.</div>
-        <input type="button" class="mbsyoutube-twoclickwarning-button" value="Start videos ✓"/>';
+        <input type="button" class="mbsyoutube-twoclickwarning-button mbsyoutube-confirm" value="Start videos ✓"/>';
         $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
         . '"enablejsapi":1}';
         $expected3 = 'id="yt___phpunit___qcQ6x123KwU"';

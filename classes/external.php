@@ -58,11 +58,7 @@ class filter_mbsyoutube_external extends external_api {
         $cache = \cache::make('filter_mbsyoutube', 'mbsexternalsourceaccept');
         $cache->set($USER->id . "_" . $courseid . "_" . $provider, true);
 
-        if ($cache->get($USER->id . "_" . $courseid . "_" . $provider)) {
-            return true;
-        } else {
-            return false;
-        }
+        return $cache->get($USER->id . "_" . $courseid . "_" . $provider);
     }
 
     /**

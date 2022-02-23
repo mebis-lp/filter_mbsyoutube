@@ -42,14 +42,34 @@ class filter_mbsyoutube extends moodle_text_filter {
     private $courseid;
 
     /**
-     * @var bool $hasuseraccepted Has a user consented to the transfer of data.
+     * Setup page with filter requirements and other prepare stuff.
+     *
+     * Override this method if the filter needs to setup page
+     * requirements or needs other stuff to be executed.
+     *
+     * Note this method is invoked from {@see setup_page_for_filters()}
+     * for each piece of text being filtered, so it is responsible
+     * for controlling its own execution cardinality.
+     *
+     * @param moodle_page $page the page we are going to add requirements to.
+     * @param context $context the context which contents are going to be filtered.
+     * @since Moodle 2.3
      */
-    private $hasuseraccepted;
+    public function setup($page, $context) {
+        $this->courseid = $page->course->id;
+        if (!$this->get_hasuseraccepted()) {
+            $page->requires->js_call_amd('filter_mbsyoutube/sethasuseraccepted', 'init', array('courseid' => $this->courseid));
+        } else {
+            $url = new moodle_url('https://www.youtube.com/iframe_api');
+            $page->requires->js($url);
+            $page->requires->js_call_amd('filter_mbsyoutube/youtube_api', 'init');
+        }
+    }
 
     /**
-     * Filter the text and replace links to youtube.com with an DSGVO coform style.
+     * Filter the text and replace links to youtube.com with an DSGVO conform style.
      *
-     * Please note that we replace links, urls AND iFrames. In order to support all
+     * Please note that we replace links, urls AND iframes. In order to support all
      * kinds of YouTube embedding.
      *
      * @param string $text some HTML content
@@ -57,7 +77,6 @@ class filter_mbsyoutube extends moodle_text_filter {
      * @return string the HTML content after the filtering has been applied
      */
     public function filter($text, array $options = []) {
-        global $PAGE;
 
         if (!is_string($text) or empty($text)) {
             return $text;
@@ -65,16 +84,16 @@ class filter_mbsyoutube extends moodle_text_filter {
 
         // When adding a new regex command, there must be added a new if clause in the callback function, too.
         $regexyoutube = '/('
-            . '((<video[^>]+><source[^>]?src=")(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)'
+            . '((<video[^>]+><source[^>]?src=")(((http|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)'
             . '(\/watch\?v=)([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)'
             . '(">[^<]+<\/video>)?)'
-            . '|((<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)'
+            . '|((<a[^>]?href=")?(((http|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)'
             . '([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)("?[^<]+<\/a>)?)'
-            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\/embed\/\b)'
+            . '|(<iframe(.*)src="((http|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\/embed\/\b)'
             . '([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)"(.*)>(.*)<\/iframe>)'
-            . '|(<a[^>]?href=")?(((http|ftp|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/embed\/)'
+            . '|(<a[^>]?href=")?(((http|https):\/\/){0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/embed\/)'
             . '([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?("?[^<]+<\/a>)?)'
-            . '|(<iframe(.*)src="((http|ftp|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)'
+            . '|(<iframe(.*)src="((http|https):\/\/{0,1}(\bwww\.youtube\b(\b\-nocookie\b)?\b\.com\b)(\/watch\?v=)'
             . '([\w\d\-]+)([\w@\?^=%&\/~+#\-;]+)?)"(.*)>(.*)<\/iframe>)'
             . ')/';
         $regexyoutubeshorturl = '/('
@@ -95,22 +114,6 @@ class filter_mbsyoutube extends moodle_text_filter {
             $count
         );
 
-        if (PHPUNIT_TEST) {
-            return $newtext;
-        }
-        $youtubevideoids = $this->youtubevideoids;
-
-        if (count($youtubevideoids) > 0 || $PAGE->course->format == 'tiles') {
-
-            if (!$this->get_hasuseraccepted()) {
-                $params = ['courseid' => $this->get_courseid()];
-                $PAGE->requires->js_call_amd('filter_mbsyoutube/sethasuseraccepted', 'init', [$params]);
-            } else {
-                $url = new moodle_url('https://www.youtube.com/iframe_api');
-                $PAGE->requires->js($url, false);
-                $PAGE->requires->js_call_amd('filter_mbsyoutube/youtube_api', 'init');
-            }
-        }
         return $newtext;
     }
 
@@ -140,51 +143,16 @@ class filter_mbsyoutube extends moodle_text_filter {
         return $styles;
     }
 
-
     /**
-     * Get the courseid from context
-     *
-     * @return int $courseid
-     */
-    protected function get_courseid() {
-        if (isset($this->courseid)) {
-            return $this->courseid;
-        }
-
-        list($context, $course, $cm) = get_context_info_array($this->context->id);
-
-        // Set course id to a default value in case of no courseid exists. E.g. in system context.
-        if (!isset($course->id)) {
-            $course = new \stdClass();
-            $course->id = 0;
-        }
-
-        $this->courseid = $course->id;
-        return $this->courseid;
-    }
-
-    /**
-     * Get hasuseraccepted from cache
+     * Get hasuseraccepted from cache.
      *
      * @return bool $hasuseraccepted
      */
     protected function get_hasuseraccepted() {
         global $USER;
-
-        if (PHPUNIT_TEST) {
-            $this->hasuseraccepted = true;
-            return $this->hasuseraccepted;
-        }
-
-        if (isset($this->hasuseraccepted)) {
-            return $this->hasuseraccepted;
-        }
-
-        $courseid = $this->get_courseid();
+        $courseid = $this->courseid;
         $cache = \cache::make('filter_mbsyoutube', 'mbsexternalsourceaccept');
-        $this->hasuseraccepted = $cache->get($USER->id . "_" . $courseid . "_YouTube");
-
-        return $this->hasuseraccepted;
+        return $cache->get($USER->id . "_" . $courseid . "_YouTube");
     }
 
     /**
@@ -260,7 +228,7 @@ class filter_mbsyoutube extends moodle_text_filter {
      * @return string HTML markup
      */
     private function render_two_click_version_youtube($videoid, $hasuseraccepted = false, $urlparam = [], $styles = '') {
-        global $OUTPUT;
+        global $OUTPUT, $CFG;
 
         $data = new stdClass();
         $data->mbswrapperstyles = $styles;
@@ -277,9 +245,7 @@ class filter_mbsyoutube extends moodle_text_filter {
         $data->mbstwoclickboxtext = get_string('mbstwoclickboxtext', 'filter_mbsyoutube');
         $data->mbsopenpopup = get_string('mbsopenpopup', 'filter_mbsyoutube');
         $data->mbswatchvideo = get_string('mbswatchvideo', 'filter_mbsyoutube');
-        $data->mbsresumevideobtn = get_string('mbsresumevideobtn', 'filter_mbsyoutube');
-        $data->mbsrestartvideobtn = get_string('mbsrestartvideobtn', 'filter_mbsyoutube');
-        $data->mebislogourl = new moodle_url('/theme/mebis/pix/mebis-logo.png');
+        $data->mebislogourl = new moodle_url($CFG->wwwroot . '/theme/mebis/pix/mebis-logo.png');
 
         if ($hasuseraccepted) {
             $data->optionacceptedhidden = ' hidden="hidden"';

@@ -22,72 +22,51 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery', 'core/ajax', 'core/notification'], function ($, ajax, notification) {
+import $ from 'jquery';
+import Ajax from 'core/ajax';
+import Notification from 'core/notification';
 
-    var params;
+let mycourseid = 0;
 
-    /**
-     * Mark a medium as accepted.
-     * @param {string} provider
-     */
-    function onVideoAcceptanceChange(provider) {
-        ajax.call([{
-            methodname: 'filter_mbsyoutube_setvideoprovidercache',
-            args: {
-                provider: provider,
-                courseid: params.courseid
-            },
-            done: function (response) {
-                if (response) {
-                    location.reload();
-                }
-            },
-            fail: notification.exception
-        }]);
-    }
+export const init = (courseid) => {
+    mycourseid = courseid;
+    initClickEvent();
+    // The button might not be on the document yet: Observe the DOM for a change.
+    new MutationObserver(initClickEvent).observe(document,
+    {
+        subtree: true,
+        childList: true
+    });
+}
 
-    /**
-     * Initialize the click event
-     */
-    function initClickEvent() {
-        // Nothing to do, because there is no button to bind an event.
-        if ($('.mbsyoutube-confirm').length == 0) {
-            return;
-        }
-
-        // Unbind the click event, because otherwise the event could be bind multiple times.
-        $('.mbsyoutube-confirm').unbind();
-
-        // Now bind the click event.
-        $('.mbsyoutube-confirm').click(function () {
-            onVideoAcceptanceChange("YouTube");
-        });
-    }
-
-    return {
-        init: function (args) {
-            params = args;
-
-            // If there is already a mbsembed yt confirm button then bind the click event.
-            if ($('.mbsyoutube-confirm').length != 0) {
-                initClickEvent();
-                return;
+/**
+ * Mark a medium as accepted.
+ * @param {string} provider
+ */
+function onVideoAcceptanceChange(mycourseid, provider) {
+    Ajax.call([{
+        methodname: 'filter_mbsyoutube_setvideoprovidercache',
+        args: {
+            provider: provider,
+            courseid: mycourseid
+        },
+        done: function (response) {
+            if (response) {
+                location.reload();
             }
+        },
+        fail: Notification.exception
+    }]);
+}
 
-            // If there is no yt confirm button. Observe the dome if there will be a change.
-            var observer = new MutationObserver(function () {
-                // Fired when a mutation occurs.
-                if ($('.mbsyoutube-confirm').length > 0) {
-                    initClickEvent();
-                }
-            });
+/**
+ * Initialize the click event
+ */
+function initClickEvent() {
+    // First unbind the click event, because it could be bound multiple times.
+    $('.mbsyoutube-confirm').unbind().click(function(e) {
+        onVideoAcceptanceChange(mycourseid, "YouTube");
+        e.stopPropagation();
+    });
+}
 
-            // Define what element should be observed by the observer
-            // and what types of mutations trigger the callback
-            observer.observe(document, {
-                subtree: true,
-                attributes: true
-            });
-        }
-    };
-});

@@ -32,5 +32,3 @@ $string['mbstwoclickboxtext'] = '<strong>Datenschutzhinweis</strong>'
     . '<br />Sobald das Video abgespielt wird, werden an YouTube persönliche <a href="https://policies.google.com/privacy" '
     . 'target="_blank" style="color:#e3e3e3 !important;">Daten</a> wie die IP-Adresse übermittelt.';
 $string['mbswatchvideo'] = 'Video trotzdem ansehen ✓';
-$string['mbsrestartvideobtn'] = 'Video erneut abspielen';
-$string['mbsresumevideobtn'] = 'Video fortsetzen';
