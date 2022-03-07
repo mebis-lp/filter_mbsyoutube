@@ -85,8 +85,9 @@
 }
 
 .mbsyoutube-img-logo {
-    padding-top: 40px;
-    padding-bottom: 20px;
+    padding-top: 3rem;
+    padding-bottom: 1rem;
+    max-height: 10rem;
 }
 
 .mbsyoutube-message-show {
@@ -113,12 +114,6 @@ div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-twoclickwarning-
 
 div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-twoclickwarning-buttonbox>.mbsyoutube-twoclickwarning-boxtext {
     color: #e3e3e3 !important;
-    text-align: center;
-    margin-top: 0px;
-    padding: 10px;
-}
-
-div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-twoclickwarning-boxtext {
     text-align: center;
     margin-top: 0px;
     margin-bottom: 0px;

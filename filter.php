@@ -133,7 +133,7 @@ class filter_mbsyoutube extends moodle_text_filter {
                 $backgroundfile
             );
         } else {
-            $backgroundurl =  null;
+            $backgroundurl = null;
         }
         $styles = 'background-image: url(' . $backgroundurl . ');';
         return $styles;

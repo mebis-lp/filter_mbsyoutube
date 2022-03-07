@@ -43,7 +43,7 @@ function filter_mbsyoutube_pluginfile($course, $cm, $context, $filearea, $args, 
         return false;
     }
 
-    // Serve only from $filearea 'logo' or 'background'
+    // Serve only from $filearea 'logo' or 'background'.
     if ($filearea != 'logo' && $filearea != 'background') {
         return false;
     }
@@ -58,7 +58,7 @@ function filter_mbsyoutube_pluginfile($course, $cm, $context, $filearea, $args, 
         return false;
     }
 
-    // We can now send the file back to the browser - in this case with a cache lifetime of $CFG->filelifetime and no filtering. 
+    // We can now send the file back to the browser - in this case with a cache lifetime of $CFG->filelifetime and no filtering.
     send_stored_file($file, 0, 0, false, $options);
-    
+
 }

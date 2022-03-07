@@ -37,7 +37,7 @@ $string['mbsyoutube_twoclickacceptancebuttontext_desc'] = 'Text auf dem Button f
 $string['mbsyoutube_twoclickacceptancebuttonmsgtext'] = 'Text für das Einwilligung-Button in einer Nutzernachricht.';
 $string['mbsyoutube_twoclickacceptancebuttonmsgtext_desc'] = 'Text auf dem Button für die Einwilligung '
 . ' zum Video Abspielen in einer Nutzernachricht.';
-$string['mbsyoutube_twoclickbackground'] = 'Hintergrundkachel für die zwei Klick Lösung.';
+$string['mbsyoutube_twoclickbackground'] = 'Hintergrundbild für die zwei Klick Lösung.';
 $string['mbsyoutube_twoclickbackground_desc'] = 'Laden Sie hier ein Bild hoch, das als Kachel für den Hintergrund '
     . 'der Einblendung der zwei Klick Lösung verwendet wird.';
 $string['mbsyoutube_twoclicklogo'] = 'Logo for the two click solution.';
