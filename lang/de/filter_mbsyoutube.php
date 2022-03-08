@@ -24,26 +24,25 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['cachedef_mbsexternalsourceaccept'] = "Speichert die Zustimmung, dass der User mit der Weitergabe der IP-Adresse an YouTube einverstanden ist, im Cache.";
-$string['filtername'] = 'YouTube zwei Klick Lösung rendern';
+$string['cachedef_mbsexternalsourceaccept'] = 'Speichert die Zustimmung, dass der User mit der Weitergabe der IP-Adresse an '
+    . 'YouTube einverstanden ist, im Cache.';
+$string['filtername'] = 'YouTube Einwilligungsdialog rendern';
 $string['privacy:metadata'] = 'Das mbsYouTube Plugin speichert keine personenbezogenen Daten.';
 $string['mbsopenpopup'] = 'Videoplayer öffnen';
 $string['mbstwoclickboxtext'] = '<strong>Datenschutzhinweis</strong>'
     . '<br />Sobald das Video abgespielt wird, werden an YouTube persönliche <a href="https://policies.google.com/privacy" '
     . 'target="_blank" style="color:#e3e3e3 !important;">Daten</a> wie die IP-Adresse übermittelt.';
-$string['mbsyoutube_twoclickacceptancebuttontext'] = 'Text für das Einwilligung-Button.';
-$string['mbsyoutube_twoclickacceptancebuttontext_desc'] = 'Text auf dem Button für die Einwilligung '
-    . ' zum Video Abspielen.';
-$string['mbsyoutube_twoclickacceptancebuttonmsgtext'] = 'Text für das Einwilligung-Button in einer Nutzernachricht.';
-$string['mbsyoutube_twoclickacceptancebuttonmsgtext_desc'] = 'Text auf dem Button für die Einwilligung '
-. ' zum Video Abspielen in einer Nutzernachricht.';
-$string['mbsyoutube_twoclickbackground'] = 'Hintergrundbild für die zwei Klick Lösung.';
-$string['mbsyoutube_twoclickbackground_desc'] = 'Laden Sie hier ein Bild hoch, das als Kachel für den Hintergrund '
-    . 'der Einblendung der zwei Klick Lösung verwendet wird.';
-$string['mbsyoutube_twoclicklogo'] = 'Logo for the two click solution.';
-$string['mbsyoutube_twoclicklogo_desc'] = 'Laden Sie hier ein Bild hoch, das für das Logo auf '
-    . 'der Einblendung der zwei Klick Lösung verwendet wird.';
-$string['mbsyoutube_twoclickmessage'] = 'Datenschützhinweis für die zwei Klick Lösung';
-$string['mbsyoutube_twoclickmessage_desc'] = 'Nachricht mit Datenschützhinweis auf . '
-    . 'der Einblendung der zwei Klick Lösung.';
+$string['mbsyoutube_twoclickacceptancebuttontext'] = 'Beschriftung des Einwilligungsbuttons';
+$string['mbsyoutube_twoclickacceptancebuttontext_desc'] = 'Beschriftung des Einwilligungsbuttons zum Abspielen des Videos';
+$string['mbsyoutube_twoclickacceptancebuttonmsgtext'] = 'Beschriftung des Einwilligungsbuttons in einer Nutzernachricht';
+$string['mbsyoutube_twoclickacceptancebuttonmsgtext_desc'] = 'Beschriftung des Einwilligungsbuttons zum Abspielen des Videos in '
+. 'einer Nutzernachricht';
+$string['mbsyoutube_twoclickbackground'] = 'Hintergrundbild des Einwilligungsdialogs';
+$string['mbsyoutube_twoclickbackground_desc'] = 'Laden Sie hier ein Bild hoch, das als Hintergrundbild '
+    . 'für den Einwilligungsdialog dienen soll.';
+$string['mbsyoutube_twoclicklogo'] = 'Logo im Einwilligungsdialog';
+$string['mbsyoutube_twoclicklogo_desc'] = 'Laden Sie hier ein Bild hoch, das als Logo auf '
+    . 'dem Einwilligungsdialog verwendet werden soll.';
+$string['mbsyoutube_twoclickmessage'] = 'Datenschutzhinweis im Einwilligungsdialog';
+$string['mbsyoutube_twoclickmessage_desc'] = 'Nachricht mit Datenschutzhinweis auf dem Einwilligungsdialog.';
 $string['mbswatchvideo'] = 'Video trotzdem ansehen ✓';
