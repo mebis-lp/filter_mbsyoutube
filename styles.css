@@ -61,14 +61,9 @@
 }
 
 .mbsyoutube-twoclickwarning-wrapper {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
+    margin: 1rem;
     background-color: #000;
-    background-image: url('theme/mebis/pix/bg-dark.jpg');
     background-repeat: repeat;
-
-    text-align: left;
 }
 
 @media only screen and (max-width: 650px){
@@ -90,26 +85,13 @@
 }
 
 .mbsyoutube-img-logo {
-    padding-top: 40px;
-    padding-bottom: 20px;
-}
-
-.mbsyoutube-bar-overlay{
-    position:absolute;
-    bottom:49px;
-    left:0;
-    width:100%;
-    height:555px;
-    opacity:0.5;
-    z-index:50;
-}
-
-.mbsyoutube-type-audio {
-    padding: 45px;
+    padding-top: 3rem;
+    padding-bottom: 1rem;
+    max-height: 10rem;
 }
 
 .mbsyoutube-message-show {
-        display: none;
+    display: none;
 }
 
 /* Rendering YouTube two click solution in messages area. --- Beginning */
@@ -132,12 +114,6 @@ div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-twoclickwarning-
 
 div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-twoclickwarning-buttonbox>.mbsyoutube-twoclickwarning-boxtext {
     color: #e3e3e3 !important;
-    text-align: center;
-    margin-top: 0px;
-    padding: 10px;
-}
-
-div.message>div>.mbsyoutube-twoclickwarning-wrapper>.mbsyoutube-twoclickwarning-boxtext {
     text-align: center;
     margin-top: 0px;
     margin-bottom: 0px;

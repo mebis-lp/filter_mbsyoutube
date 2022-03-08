@@ -24,13 +24,21 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['cachedef_mbsexternalsourceaccept'] = "Caches the confirmation to view YouTube videos.";
-$string['filtername'] = 'Render two click solution for YouTube videos.';
-$string['privacy:metadata'] = 'The embed mebis content filter plugin does not store any personal data.';
-$string['mbsopenpopup'] = 'Open video player.';
-$string['mbstwoclickboxtext'] = '<strong>Privacy Policy</strong>'
-    . '<br />Once the video plays, personal <a href="https://policies.google.com/privacy" '
-    . 'target="_blank" style="color:#e3e3e3 !important;">information</a>, such as the IP address, will be sent to YouTube.';
-$string['mbswatchvideo'] = 'Start videos ✓';
-$string['mbsrestartvideobtn'] = 'Restart video';
-$string['mbsresumevideobtn'] = 'Resume video';
+$string['cachedef_mbsexternalsourceaccept'] = 'Caches the consent that the user agrees to share the IP address with YouTube.';
+$string['filtername'] = 'Render YouTube consent dialog';
+$string['privacy:metadata'] = 'The mbsYouTube plugin does not store any personal data.';
+$string['mbsopenpopup'] = 'Open video player';
+$string['mbstwoclickboxtext'] = '<strong>Data protection notice</strong>'
+    . '<br />As soon as the video is played, personal <a href="https://policies.google.com/privacy" '
+. 'target="_blank" style="color:#e3e3e3 !important;">data</a> such as the IP address is transmitted to YouTube';
+$string['mbsyoutube_twoclickacceptancebuttontext'] = 'Caption of the consent button';
+$string['mbsyoutube_twoclickacceptancebuttontext_desc'] = 'Caption of the consent button to play the video';
+$string['mbsyoutube_twoclickacceptancebuttonmsgtext'] = 'Button caption for the consent button in a user message';
+$string['mbsyoutube_twoclickacceptancebuttonmsgtext_desc'] = 'Button caption for consent to play video in a user message';
+$string['mbsyoutube_twoclickbackground'] = 'Background image of the consent dialog';
+$string['mbsyoutube_twoclickbackground_desc'] = 'Upload an image here to serve as the background image for the consent dialog.';
+$string['mbsyoutube_twoclicklogo'] = 'Logo in consent dialog';
+$string['mbsyoutube_twoclicklogo_desc'] = 'Upload an image here to be used as the logo on the consent dialog.';
+$string['mbsyoutube_twoclickmessage'] = 'Data protection notice in the consent dialog';
+$string['mbsyoutube_twoclickmessage_desc'] = 'Message with data privacy notice on consent dialog.';
+$string['mbswatchvideo'] = 'Watch video anyway ✓';

@@ -21,200 +21,90 @@
  * @copyright  2019 Peter Mayer, ISB Bayern, peter.mayer@isb.bayern.de
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery'], function ($) {
 
-    return {
-        init: function (args) {
-            var videos = {};
+import Ajax from 'core/ajax';
+
+let videos = {};
+let players = {};
+
+export const init = () => {
+    // need to wait for the load event, since the iframe_api might not be there yet.
+    window.addEventListener('load', initPlayer, false);
+
+    // If there is no mbsyoutube-ytiframe yet: Observe the DOM if there will be a change.
+    var observer = new MutationObserver(function () {
+        // Fired when a mutation occurs.
+        if (document.querySelectorAll('.mbsyoutube-ytiframe').length > 0) {
             initPlayer();
-
-            // If there is no yt confirm button. Observe the dome if there will be a change.
-            var observer = new MutationObserver(function () {
-                // Fired when a mutation occurs.
-                if ($('.mbsyoutube-ytiframe').length > 0) {
-                    initPlayer();
-                }
-            });
-
-            // Define what element should be observed by the observer
-            // and what types of mutations trigger the callback
-            observer.observe(document, {
-                subtree: true,
-                attributes: true
-            });
-
-            /**
-             * Initialize the Player.
-             */
-            function initPlayer() {
-                $('.mbsyoutube-ytiframe').each(function () {
-                    var playerid = this.id.split("___");
-                    var videoid = playerid[2];
-                    var videouniqid = playerid[1];
-                    videos = getJsonObjectFromIdAttribut(videoid, 'data-extern', videouniqid);
-                });
-
-                $(document).ready(function () {
-                    loadPlayer();
-                });
-            }
-
-            /**
-             * Sets the YouTube API to Dome and initiats the players
-             */
-            function loadPlayer() {
-                if (typeof (YT) == 'undefined' || typeof (YT.Player) == 'undefined') {
-
-                    var tag = document.createElement('script');
-                    tag.src = "https://www.youtube.com/iframe_api";
-                    var firstScriptTag = document.getElementsByTagName('script')[0];
-                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-                    window.onYouTubePlayerAPIReady = function () {
-                        $.each(videos, function (index, item) {
-                            onYouTubePlayer(item['videoid'], item['ytparam'], index);
-                        });
-                    };
-
-                } else {
-
-                    $.each(videos, function (index, item) {
-                        onYouTubePlayer(item['videoid'], item['ytparam'], index);
-                    });
-
-                }
-            }
-
-            var player = {};
-
-            /**
-             * Initiates one YouTube player
-             * @param {string} videoid
-             * @param {*} ytparam
-             * @param {string} uniqeid
-             */
-            function onYouTubePlayer(videoid, ytparam, uniqeid) {
-                player[uniqeid] = new YT.Player('yt___' + uniqeid + '___' + videoid, {
-                    videoId: videoid,
-                    playerVars: ytparam,
-                    events: {
-                        'onStateChange': onPlayerStateChange,
-                        'onError': catchError
-                    }
-                });
-
-                // Adds eventlistener to transparent layer to start/stop vdideo.
-                $('#yt___baroverlay___' + uniqeid + "___" + videoid).click(function () {
-                    var playerid = this.id.split("___");
-                    var videouniqid = playerid[2];
-                    var state = player[videouniqid].getPlayerState();
-                    if (state == YT.PlayerState.PLAYING) {
-                        player[videouniqid].pauseVideo();
-                    } else {
-                        player[videouniqid].playVideo();
-                    }
-                });
-            }
-
-            /**
-             * Callback Player State event listener.
-             * @param {object} event
-             */
-            function onPlayerStateChange(event) {
-
-                var frameid = event.target.a.id;
-                var ids = frameid.split("___");
-                var videoid = ids[2];
-                var uniqeid = ids[1];
-
-                $('#yt___statwrap___' + uniqeid + '___' + videoid).removeAttr('hidden');
-                $('#yt___restart___' + uniqeid + '___' + videoid).removeAttr('hidden');
-                $('#yt___restart___' + uniqeid + '___' + videoid).hide();
-                $('#yt___baroverlay___' + uniqeid + '___' + videoid).removeAttr('hidden');
-                $('#yt___baroverlay___' + uniqeid + '___' + videoid).hide();
-
-                if (event.data == YT.PlayerState.PLAYING) {
-                    videos = getJsonObjectFromIdAttribut(videoid, 'data-extern', uniqeid);
-                    args = videos[uniqeid]['ytparam'];
-                    if (args['end'] == '' || args['end'] == 0) {
-                        delete args['end'];
-                    }
-                    if (player[uniqeid].getCurrentTime() > args['end'] || player[uniqeid].getCurrentTime() < args['start']) {
-                        player[uniqeid].loadVideoById({
-                            videoId: videoid,
-                            startSeconds: args['start'],
-                            endSeconds: args['end']
-                        });
-                    }
-                    $('#' + frameid).show();
-                } else if (event.data == YT.PlayerState.ENDED) {
-                    $('#yt___play___' + uniqeid + '___' + videoid).hide();
-                    $('#yt___restart___' + uniqeid + '___' + videoid).show();
-                    $('#yt___statwrap___' + uniqeid + '___' + videoid).show();
-                    $('#yt___baroverlay___' + uniqeid + '___' + videoid).hide();
-                    $('#' + frameid).hide();
-                } else if (event.data == YT.PlayerState.PAUSED) {
-                    $('#yt___baroverlay___' + uniqeid + '___' + videoid).show();
-                    $('#yt___restart___' + uniqeid + '___' + videoid).hide();
-                    $('#yt___statwrap___' + uniqeid + '___' + videoid).show();
-                }
-            }
-
-            /**
-             * Catches Errors.
-             * @param {object} event
-             */
-            function catchError(event) {
-                if (event.data == 100) {
-                    window.console.log("Error - The video is not accessable!");
-                }
-            }
-
-            /**
-             * Makes a json object from an data - attribut value of a tag.
-             * @param {string} videoid
-             * @param {string} attribut
-             * @param {string} uniqid
-             * @returns {array}
-             */
-            function getJsonObjectFromIdAttribut(videoid, attribut, uniqid) {
-                var jsonobj = $.parseJSON($('#yt___' + uniqid + '___' + videoid).attr(attribut));
-                videos[uniqid] = {};
-                videos[uniqid]['ytparam'] = {};
-                videos[uniqid]['videoid'] = videoid;
-                $.each(jsonobj, function (index, value) {
-                    videos[uniqid]['ytparam'][index] = value;
-                });
-                return videos;
-            }
-
-            // OnClick event for start playing.
-            $(".mbsyoutube-yt-play").click(function (e) {
-                var buttonid = e.target.id;
-                var buttonarr = buttonid.split("___");
-                var uniqid = buttonarr[2];
-                var videoid = buttonarr[3];
-                $('#yt___' + uniqid + '___' + videoid).delay(200).fadeIn(400);
-                player[uniqid].playVideo();
-            });
-
-            // OnClick event for restart video after endded.
-            $(".mbsyoutube-yt-restart").click(function (e) {
-                var buttonid = e.target.id;
-                var buttonarr = buttonid.split("___");
-                var uniqid = buttonarr[2];
-                var videoid = buttonarr[3];
-                $('#yt___' + uniqid + '___' + videoid).delay(200).fadeIn(400);
-
-                videos = getJsonObjectFromIdAttribut(videoid, 'data-extern', uniqid);
-                args = videos[uniqid]['ytparam'];
-
-                player[uniqid].loadVideoById({
-                    videoId: videoid,
-                    startSeconds: args['start'],
-                    endSeconds: args['end']
-                });
-            });
         }
-    };
-});
+    });
+
+    // Define what element should be observed by the observer
+    // and what types of mutations trigger the callback
+    observer.observe(document, {
+        subtree: true,
+        childList: true
+    });
+}
+
+/**
+ * Initialize the Players.
+ */
+function initPlayer() {
+
+    document.querySelectorAll('.mbsyoutube-ytiframe').forEach(function (node) {
+        var playerid = node.id.split("___");
+        var videoid = playerid[2];
+        var videouniqid = playerid[1];
+        getJsonObjectFromIdAttribut(videoid, 'data-extern', videouniqid);
+    });
+
+    loadPlayers();
+}
+
+/**
+ * Initialise the players.
+ */
+function loadPlayers() {
+    for (const [key, value] of Object.entries(videos)) {
+        createYouTubePlayer(value['videoid'], value['ytparam'], key);
+    }
+}
+
+/**
+ * Create a YouTube player for a given video and add it to the players object.
+ * @param {string} videoid
+ * @param {*} ytparam
+ * @param {string} uniqeid
+ */
+function createYouTubePlayer(videoid, ytparam, uniqeid) {
+    players[uniqeid] = new YT.Player('yt___' + uniqeid + '___' + videoid, {
+        videoId: videoid,
+        playerVars: ytparam,
+        events: {
+            'onError': catchError
+        }
+    });
+}
+
+/**
+ * Catch errors.
+ * @param {object} event
+ */
+function catchError(event) {
+    if (event.data == 100) {
+        window.console.log("Error - The video is not accessible!");
+    }
+}
+
+/**
+ * Make a json object from a data attribute and add it to the video object.
+ * @param {string} videoid
+ * @param {string} attribut
+ * @param {string} uniqid
+ */
+function getJsonObjectFromIdAttribut(videoid, attribut, uniqid) {
+    var jsonobj = JSON.parse(
+        document.getElementById('yt___' + uniqid + '___' + videoid).getAttribute(attribut));
+    videos[uniqid] = {ytparam: jsonobj, videoid: videoid};
+}

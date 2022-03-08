@@ -39,7 +39,7 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
      * Test case for filter_mbsyoutube.
      */
     public function test_links() {
-        global $DB;
+        global $DB, $CFG;
 
         $this->resetAfterTest(true);
         $this->setAdminUser();
@@ -63,9 +63,8 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
         $expected = '<div class="mbsyoutube-twoclickwarning-boxtext"><strong>Privacy Policy</strong><br />Once the video plays, '
         . 'personal <a href="https://policies.google.com/privacy" target="_blank" style="color:#e3e3e3 !important;">information'
         . '</a>, such as the IP address, will be sent to YouTube.</div>
-        <input type="button" class="mbsyoutube-twoclickwarning-button" value="Start videos ✓"/>';
-        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
-        . '"enablejsapi":1}';
+        <input type="button" class="mbsyoutube-twoclickwarning-button mbsyoutube-confirm" value="Start videos ✓"/>';
+        $expected2 = '{"modestbranding":1,"iv_load_policy":3,"enablejsapi":1,"origin":"' . $CFG->wwwroot .'"}';
         $expected3 = 'id="yt___phpunit___qcQ6x123KwU"';
         $expected4 = '<p>YouTube eingefügt<br>';
         $expected5 = '<p>Das ist das Ende!</p>';
@@ -259,8 +258,8 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
         $this->assertStringContainsString($expected5, $filtered);
 
         // Youtube short url with start parameter.
-        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
-        . '"enablejsapi":1,"start":"15"}';
+        $expected2 = '{"modestbranding":1,"iv_load_policy":3,'
+        . '"enablejsapi":1,"origin":"' . $CFG->wwwroot . '","start":"15"}';
         $youtube = '<p>YouTube eingefügt<br>'
         . 'https://youtu.be/qcQ6x123KwU?t=15</p>'
         . '<p>Das ist das Ende!</p>';
@@ -303,8 +302,8 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
         . ' picture-in-picture" allowfullscreen></iframe></p>'
         . '<p>Das ist das Ende!</p>';
 
-        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
-        . '"enablejsapi":1,"start":"15"}';
+        $expected2 = '{"modestbranding":1,"iv_load_policy":3,'
+        . '"enablejsapi":1,"origin":"' . $CFG->wwwroot . '","start":"15"}';
         $filtered = $filter->filter($youtube);
         $this->assertStringContainsString($expected, $filtered);
         $this->assertStringContainsString($expected2, $filtered);
@@ -331,8 +330,8 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
         . ' https://youtu.be/qcQ6x123KwU</video>'
         . '</p>'
         . '<p>Das ist das Ende!</p>';
-        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
-        . '"enablejsapi":1,"start":"15"}';
+        $expected2 = '{"modestbranding":1,"iv_load_policy":3,'
+        . '"enablejsapi":1,"origin":"' . $CFG->wwwroot . '","start":"15"}';
         $filtered = $filter->filter($youtube);
         $this->assertStringContainsString($expected, $filtered);
         $this->assertStringContainsString($expected2, $filtered);
@@ -344,8 +343,8 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
         $youtube = '<p>YouTube eingefügt<br>'
         . 'https://youtu.be/qcQ6x123KwU?end=15</p>'
         . '<p>Das ist das Ende!</p>';
-        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
-        . '"enablejsapi":1,"end":"15"}';
+        $expected2 = '{"modestbranding":1,"iv_load_policy":3,'
+        . '"enablejsapi":1,"origin":"' . $CFG->wwwroot . '","end":"15"}';
         $filtered = $filter->filter($youtube);
         $this->assertStringContainsString($expected, $filtered);
         $this->assertStringContainsString($expected2, $filtered);
@@ -418,8 +417,8 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
         $youtube = '<p>YouTube eingefügt<br>'
         . 'https://youtu.be/qcQ6x123KwU?start=5&end=15</p>'
         . '<p>Das ist das Ende!</p>';
-        $expected2 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
-        . '"enablejsapi":1,"start":"5","end":"15"}';
+        $expected2 = '{"modestbranding":1,"iv_load_policy":3,'
+        . '"enablejsapi":1,"origin":"' . $CFG->wwwroot . '","start":"5","end":"15"}';
         $filtered = $filter->filter($youtube);
         $this->assertStringContainsString($expected, $filtered);
         $this->assertStringContainsString($expected2, $filtered);
@@ -477,10 +476,10 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
         . '<p>YouTube eingefügt 2<br>'
         . 'https://youtu.be/qcQ6x123KwU?start=5&end=15</p>'
         . '<p>Das ist das Ende 2!</p>';
-        $expected3 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
-        . '"enablejsapi":1,"start":"3","end":"13"}';
-        $expected6 = '{"wmode":"transparent","modestbranding":1,"rel":0,"showinfo":0,"iv_load_policy":3,"autohide":1,'
-        . '"enablejsapi":1,"start":"5","end":"15"}';
+        $expected3 = '{"modestbranding":1,"iv_load_policy":3,'
+        . '"enablejsapi":1,"origin":"' . $CFG->wwwroot . '","start":"3","end":"13"}';
+        $expected6 = '{"modestbranding":1,"iv_load_policy":3,'
+        . '"enablejsapi":1,"origin":"' . $CFG->wwwroot . '","start":"5","end":"15"}';
         $expected7 = '<p>YouTube eingefügt 2<br>';
         $expected8 = '<p>Das ist das Ende 2!</p>';
 
