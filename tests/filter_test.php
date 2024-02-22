@@ -23,6 +23,10 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace filter_mbsyoutube;
+
+use advanced_testcase;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -34,9 +38,11 @@ require_once($CFG->dirroot . '/filter/mbsyoutube/filter.php'); // Include the co
  * @copyright 2019 Peter Mayer, ISB Bayern
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class filter_mbsyoutube_testcase extends advanced_testcase {
+class filter_test extends advanced_testcase {
     /**
      * Test case for filter_mbsyoutube.
+     *
+     * @covers \filter_mbsyoutube\filter::filter
      */
     public function test_links() {
         global $DB, $CFG;
@@ -45,19 +51,19 @@ class filter_mbsyoutube_testcase extends advanced_testcase {
         $this->setAdminUser();
 
         $course = $this->getDataGenerator()->create_course();
-        $context = context_course::instance($course->id);
+        $context = \context_course::instance($course->id);
 
         \core\plugininfo\media::set_enabled_plugins(''); // Disable core mediaplugin.
 
         // Enable filter mbsyoutube.
-        $filterobject = new stdClass();
+        $filterobject = new \stdClass();
         $filterobject->filter = 'mbsyoutube';
         $filterobject->contextid = $context->id;
         $filterobject->active = 1;
         $filterobject->sortorder = 0;
         $DB->insert_record('filter_active', $filterobject);
 
-        $filter = new filter_mbsyoutube($context, []);
+        $filter = new \filter_mbsyoutube($context, []);
 
         // Expected significant part for the next few assertions.
         $expected = '<div class="mbsyoutube-twoclickwarning-boxtext"><strong>Privacy Policy</strong><br />Once the video plays, '

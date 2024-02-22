@@ -21,7 +21,6 @@
  * @copyright  2017 Andreas Wagner, 2019 Peter Mayer, ISB Bayern
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Filter class mbsyoutube.
@@ -59,7 +58,7 @@ class filter_mbsyoutube extends moodle_text_filter {
     public function setup($page, $context) {
         $this->courseid = $page->course->id;
         if (!$this->get_hasuseraccepted()) {
-            $page->requires->js_call_amd('filter_mbsyoutube/sethasuseraccepted', 'init', array('courseid' => $this->courseid));
+            $page->requires->js_call_amd('filter_mbsyoutube/sethasuseraccepted', 'init', ['courseid' => $this->courseid]);
         } else {
             $url = new moodle_url('https://www.youtube.com/iframe_api');
             $page->requires->js($url);
@@ -79,7 +78,7 @@ class filter_mbsyoutube extends moodle_text_filter {
      */
     public function filter($text, array $options = []) {
 
-        if (!is_string($text) or empty($text)) {
+        if (!is_string($text) || empty($text)) {
             return $text;
         }
 
@@ -278,7 +277,7 @@ class filter_mbsyoutube extends moodle_text_filter {
             'modestbranding' => 1,
             'iv_load_policy' => 3,
             'enablejsapi' => 1,
-            'origin' => $CFG->wwwroot
+            'origin' => $CFG->wwwroot,
         ];
 
         if (isset($params['query'])) {

@@ -22,9 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-use \block_mbsteachshare as mbst;
 /**
  * Serve the files from the filter_mbsyoutube file area.
  * @param stdClass $course
@@ -36,7 +33,7 @@ use \block_mbsteachshare as mbst;
  * @param array $options
  * @return mixed
  */
-function filter_mbsyoutube_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+function filter_mbsyoutube_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
 
     // All contextlevel are admitted.
     if (!$context->contextlevel) {
@@ -54,7 +51,7 @@ function filter_mbsyoutube_pluginfile($course, $cm, $context, $filearea, $args, 
     // Extract the filename / filepath from the $args array.
     $filename = array_pop($args); // The last item in the $args array.
     $file = get_file_storage()->get_file($context->id, 'filter_mbsyoutube', $filearea, 0, '/', $filename);
-    if (!$file or $file->is_directory()) {
+    if (!$file || $file->is_directory()) {
         return false;
     }
 

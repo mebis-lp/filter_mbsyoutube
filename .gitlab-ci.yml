@@ -1,0 +1,4 @@
+include:
+  - project: 'mebis-moodle/local_pipeline_docker'
+    file:
+      - 'plugin-ci.yml'
