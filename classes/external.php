@@ -41,7 +41,7 @@ class filter_mbsyoutube_external extends external_api {
 
         return new external_function_parameters([
             'provider'    => new external_value(PARAM_TEXT, 'Title of Provider'),
-            'courseid'    => new external_value(PARAM_INT, 'Course ID')
+            'courseid'    => new external_value(PARAM_INT, 'Course ID'),
         ]);
     }
 

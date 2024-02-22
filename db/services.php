@@ -30,5 +30,5 @@ $functions = [
         'description'  => 'Set two click acceptance status to cache',
         'type'         => 'write',
         'ajax'         => true,
-    ]
+    ],
 ];
